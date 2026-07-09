@@ -1,0 +1,17 @@
+{
+  "name": "audit-log-pro",
+  "version": "0.1.0",
+  "description": "Enterprise activity/audit logging for WordPress.",
+  "author": "Md Alamin",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "start": "wp-scripts start --webpack-src-dir=blocks/recent-activity/src --output-path=blocks/recent-activity/build",
+    "build": "wp-scripts build blocks/recent-activity/src/index.js src/slotfill/index.js --output-path=build",
+    "lint:js": "wp-scripts lint-js",
+    "lint:php": "phpcs --standard=WordPress .",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}
