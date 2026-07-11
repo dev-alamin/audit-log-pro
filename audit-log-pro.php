@@ -13,6 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require __DIR__. '/vendor/autoload.php';
+
 define( 'ADTLOGPRO_VERSION', '0.1.0' );
 define( 'ADTLOGPRO_PLUGIN_FILE', __FILE__ );
 define( 'ADTLOGPRO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

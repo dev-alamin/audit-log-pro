@@ -1,0 +1,20 @@
+{
+    "name": "amin/audit-log-pro",
+    "type": "wordpress-plugin",
+    "require": {
+        "phpunit/phpunit": "12.5.x-dev"
+    },
+    "license": "GPLv2 or later",
+    "autoload": {
+        "psr-4": {
+            "Amin\\AuditLogPro\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Al Amin",
+            "email": "hmalaminmb4@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
