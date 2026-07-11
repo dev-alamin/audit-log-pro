@@ -1,11 +1,11 @@
 <?php
-namespace Amin\AuditLogPro;
+namespace Amin\AuditLogPro\Database;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class ActivatePlugin {
+class Schema {
 
 	/**
 	 * Create Database Table
@@ -17,12 +17,13 @@ class ActivatePlugin {
 		$table           = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$query = "CREATE TABLE {$table}(
+		$query = "CREATE TABLE {$table} (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         event_type VARCHAR(100) NOT NULL,
         user_id BIGINT UNSIGNED DEFAULT NULL,
         object_type VARCHAR(100) DEFAULT NULL,
         object_id BIGINT UNSIGNED DEFAULT NULL,
+        ip_address VARCHAR(45) DEFAULT NULL,
         message TEXT DEFAULT NULL,
         meta LONGTEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -36,5 +37,7 @@ class ActivatePlugin {
 
 		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 		dbDelta( $query );
+
+        update_option( 'adtlogpro_db_version', ADTLOGPRO_DB_VERSION );
 	}
 }
