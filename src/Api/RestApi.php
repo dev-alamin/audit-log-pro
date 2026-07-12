@@ -1,6 +1,10 @@
 <?php
 namespace Amin\AuditLogPro\Api;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Amin\AuditLogPro\Registrable;
 use WP_REST_Request;
 use WP_REST_Server;
