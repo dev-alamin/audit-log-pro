@@ -48,14 +48,33 @@ class Logger implements Registrable {
 		$user = get_userdata( $user_id );
 
 		$old_roles_str = implode( ', ', $old_roles );
-		$message       = sprintf( '%s changed role from %s to %s', self::user_profile_updated_by( $user_id ), $old_roles_str, $new_role );
+		$message       = sprintf(
+			'%s changed role from %s to %s',
+			self::user_profile_updated_by( $user_id ),
+			$old_roles_str,
+			$new_role
+		);
 
 		if ( $user_id !== get_current_user_id() ) {
-			$message = sprintf( '%s changed role of %s from %s to %s', self::user_profile_updated_by( $user_id ), $user->user_login, $old_roles_str, $new_role );
+			$message = sprintf(
+				'%s changed role of %s from %s to %s',
+				self::user_profile_updated_by( $user_id ),
+				$user->user_login,
+				$old_roles_str,
+				$new_role
+			);
 		}
 
 		if ( $user ) {
-			$this->log( 'user_role_changed', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
+			$this->log(
+				'user_role_changed',
+				$user->ID,
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				$message,
+				array()
+			);
 		}
 	}
 
@@ -67,18 +86,37 @@ class Logger implements Registrable {
 	 */
 	public function action_after_password_reset( $user, $new_pass ): void {
 		if ( $user instanceof WP_User ) {
-			$this->log( 'user_password_reset', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s reset password', self::user_profile_updated_by( $user->ID ) ), array() );
+			$this->log(
+				'user_password_reset',
+				$user->ID,
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				sprintf(
+					'%s reset password',
+					self::user_profile_updated_by( $user->ID )
+				),
+				array()
+			);
 		}
 	}
 
-	public function action_user_register( $user_id ): void {
+	public function action_user_register( int $user_id ): void {
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			$this->log( 'user_registered', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s registered', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log(
+				'user_registered',
+				$user->ID,
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				sprintf( '%s registered', self::user_profile_updated_by( $user_id ) ),
+				array()
+			);
 		}
 	}
 
-	public function action_profile_update( $user_id, $old_user_data ): void {
+	public function action_profile_update( int $user_id, $old_user_data ): void {
 		$user    = get_userdata( $user_id );
 		$message = sprintf( '%s updated profile', self::user_profile_updated_by( $user->ID ) );
 
@@ -87,7 +125,15 @@ class Logger implements Registrable {
 		}
 
 		if ( $user ) {
-			$this->log( 'user_profile_updated', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
+			$this->log(
+				'user_profile_updated',
+				$user->ID,
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				$message,
+				array()
+			);
 		}
 	}
 
@@ -96,7 +142,7 @@ class Logger implements Registrable {
 		$changed_by = '';
 
 		if ( $user === get_current_user_id() ) {
-			$changed_by = self::user_profile_updated_by( $user_id );
+			$changed_by = self::actor_name();
 		} else {
 			$changed_by_user = get_userdata( get_current_user_id() );
 			if ( $changed_by_user ) {
@@ -107,10 +153,18 @@ class Logger implements Registrable {
 		return $changed_by;
 	}
 
-	public function action_delete_user( $user_id ): void {
+	public function action_delete_user( int $user_id ): void {
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			$this->log( 'user_deleted', get_current_user_id(), 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log(
+				'user_deleted',
+				get_current_user_id(),
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ),
+				array()
+			);
 		}
 	}
 
@@ -123,7 +177,15 @@ class Logger implements Registrable {
 
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			$this->log( 'user_logout', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged out', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log(
+				'user_logout',
+				$user->ID,
+				'user',
+				$user->ID,
+				Helper::get_user_ip(),
+				sprintf( '%s logged out', self::user_profile_updated_by( $user_id ) ),
+				array()
+			);
 		}
 	}
 
@@ -136,8 +198,6 @@ class Logger implements Registrable {
 		string $message,
 		array $meta
 	) {
-		global $wpdb;
-		$table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
 
 		$data = array(
 			'event_type'  => sanitize_key( $event_type ),
@@ -149,10 +209,28 @@ class Logger implements Registrable {
 			'meta'        => wp_json_encode( $meta ),
 		);
 
-		$this->repository->insert( $data );
+		$inserted = $this->repository->insert( $data );
+
+		if ( ! $inserted ) {
+			do_action( 'adtlogpro_log_insertion_failed', $data );
+			error_log( 'Activity log cannot be inserted, please seek technical help' );
+		}
 	}
 
 	public function log_login( string $username, WP_User $user ) {
-		$this->log( 'user_login', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged in', $username ), array() );
+		$this->log(
+			'user_login',
+			$user->ID,
+			'user',
+			$user->ID,
+			Helper::get_user_ip(),
+			sprintf( '%s logged in', $username ),
+			array()
+		);
+	}
+
+	private static function actor_name(): string {
+		$current = wp_get_current_user();
+		return $current->exists() ? $current->user_login : 'System';
 	}
 }

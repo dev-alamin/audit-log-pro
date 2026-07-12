@@ -5,7 +5,7 @@ use Amin\AuditLogPro\Database\Schema;
 use Amin\AuditLogPro\Api\RestApi;
 use Amin\AuditLogPro\Logger;
 use Amin\AuditLogPro\Database\EventRepository;
-
+use Amin\AuditLogPro\Admin\Menu;
 /**
  * Bootstraps the Audit Log Pro plugin.
  *
@@ -51,6 +51,7 @@ class Plugin {
 	public function boot(): void {
 		if ( is_admin() ) {
 			$this->maybe_upgrade_database();
+			( new Menu() )->register();
 		}
 
 		/** @var Registrable[] $modules */

@@ -17,6 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class EventRepository {
 
+	private const COLUMNS = array(
+		'event_type'  => '%s',
+		'user_id'     => '%d',
+		'object_type' => '%s',
+		'object_id'   => '%d',
+		'ip_address'  => '%s',
+		'message'     => '%s',
+		'meta'        => '%s',
+	);
+
 	/**
 	 * Insert Logs
 	 *
@@ -27,8 +37,8 @@ class EventRepository {
 	 */
 	public function insert( array $data ): bool {
 
-		if ( count( $data ) != 7 ) {
-			return false; // We expect 7 items as per formatting
+		if ( array_diff_key( self::COLUMNS, $data ) ) {
+			return false; // Missing a required columns
 		}
 
 		global $wpdb;
@@ -37,15 +47,7 @@ class EventRepository {
 		$inserted = $wpdb->insert(
 			$table,
 			$data,
-			array(
-				'%s',
-				'%d',
-				'%s',
-				'%d',
-				'%s',
-				'%s',
-				'%s',
-			)
+			array_values( self::COLUMNS )
 		);
 
 		if ( $inserted ) {
@@ -91,40 +93,39 @@ class EventRepository {
 			'after'       => '',
 			'cursor'      => '',
 			'per_page'    => 20,
-			'page'        => 1,
 		);
 
-		$args = wp_parse_args( $default, $args );
+		$args = wp_parse_args( $args, $default );
 
 		$where  = array( '1=1' );
 		$values = array();
 
-		if ( isset( $args['event_type'] ) ) {
+		if ( ! empty( $args['event_type'] ) ) {
 			$where[]  = 'event_type = %s';
 			$values[] = $args['event_type'];
 		}
 
-		if ( isset( $args['user_id'] ) ) {
+		if ( ! empty( $args['user_id'] ) ) {
 			$where[]  = 'user_id = %d';
 			$values[] = $args['user_id'];
 		}
 
-		if ( isset( $args['cursor'] ) ) {
+		if ( ! empty( $args['cursor'] ) ) {
 			$where[]  = 'cursor < %d';
 			$values[] = $args['cursor'];
 		}
 
-		if ( isset( $args['object_type'] ) ) {
+		if ( ! empty( $args['object_type'] ) ) {
 			$where[]  = 'object_type = %s';
 			$values[] = $args['object_type'];
 		}
 
-		if ( isset( $args['object_id'] ) ) {
+		if ( ! empty( $args['object_id'] ) ) {
 			$where[]  = 'object_id = %d';
 			$values[] = $args['object_id'];
 		}
 
-		if ( isset( $args['created_at'] ) ) {
+		if ( ! empty( $args['created_at'] ) ) {
 			$where[]  = 'created_at = %s';
 			$values[] = $args['created_at'];
 		}
