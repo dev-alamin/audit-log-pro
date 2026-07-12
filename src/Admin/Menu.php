@@ -26,11 +26,30 @@ class Menu implements Registrable {
 	}
 
 	public function menu_callback() {
-		?>
-		<div class="wrap">
-			<h1 class="wp-heading-inline">Audit Log Pro</h1>
-			<div id="adtlogpro-admin-root"></div>
-		</div>
-		<?php
+		$asset_file = ADTLOGPRO_PLUGIN_DIR . 'assets/js/build/admin.asset.php';
+
+		if ( ! file_exists( $asset_file ) ) {
+			echo '<div class="wrap"><p>Run <code>npm run build</code> first.</p></div>';
+			return;
+		}
+
+		$asset = require $asset_file;
+
+		wp_enqueue_style(
+			'adtlogpro-admin',
+			ADTLOGPRO_PLUGIN_URL . 'assets/js/build/style-admin.css',
+			array(),
+			$asset['version']
+		);
+
+		wp_enqueue_script(
+			'adtlogpro-admin',
+			ADTLOGPRO_PLUGIN_URL . 'assets/js/build/admin.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+
+		echo '<div class="wrap"><div id="adtlogpro-admin-root"></div></div>';
 	}
 }

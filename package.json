@@ -1,17 +1,31 @@
 {
   "name": "audit-log-pro",
-  "version": "0.1.0",
-  "description": "Enterprise activity/audit logging for WordPress.",
-  "author": "Md Alamin",
-  "license": "GPL-2.0-or-later",
+  "version": "1.0.0",
+  "description": "Enterprise activity/audit logging plugin. Built as a technical portfolio piece covering: custom table design, optimized $wpdb queries at scale, object caching, cursor pagination, REST API, WP-Cron retention, Gutenberg dynamic blocks, editor SlotFill with a custom wp.data store, and RBAC.",
+  "main": "webpack.config.js",
   "scripts": {
-    "start": "wp-scripts start --webpack-src-dir=blocks/recent-activity/src --output-path=blocks/recent-activity/build",
-    "build": "wp-scripts build blocks/recent-activity/src/index.js src/slotfill/index.js --output-path=build",
-    "lint:js": "wp-scripts lint-js",
-    "lint:php": "phpcs --standard=WordPress .",
-    "test:unit": "wp-scripts test-unit-js"
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "test": "wp-scripts test-unit-js"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^7.50.0",
+    "@wordpress/components": "^36.1.0",
+    "@wordpress/element": "^8.2.0"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^30.0.0"
-  }
+    "@wordpress/scripts": "^32.6.0",
+    "autoprefixer": "^10.5.2",
+    "postcss": "^8.5.17",
+    "tailwindcss": "^3.4.19"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-alamin/audit-log-pro.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dev-alamin/audit-log-pro/issues"
+  },
+  "homepage": "https://github.com/dev-alamin/audit-log-pro#readme"
 }
