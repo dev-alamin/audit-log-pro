@@ -54,4 +54,19 @@ class EventRepository {
 
 		return (bool) $inserted;
 	}
+
+    /**
+     * Find log by ID
+     *
+     * @param integer $id
+     * @return object|null
+     */
+    public function find( int $id ) : ?object {
+        global $wpdb;
+		$table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
+
+        return $wpdb->get_row(
+            $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id )
+        );
+    }
 }
