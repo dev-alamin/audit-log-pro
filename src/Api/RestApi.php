@@ -35,7 +35,7 @@ class RestApi implements Registrable {
 			self::NAMESPACE,
 			'/logs/',
 			array(
-				'method'              => WP_REST_Server::READABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logs' ),
 				'permission_callback' => '__return_true', // MUST handle soon
 				'args'                => array(
@@ -60,14 +60,32 @@ class RestApi implements Registrable {
 	}
 
 	public function get_logs( WP_REST_Request $request ): WP_REST_Response {
-		$data = array();
-
-		if ( isset( $request['per_page'] ) ) {
-			$data['per_page'] = $request['per_page'];
-		}
-
-		return rest_ensure_response(
-			$this->repository->query( $data ),
+		$args = array_filter(
+			array(
+				'per_page' => $request['per_page'],
+				'page'     => $request['page'],
+			)
 		);
+
+		$logs = $this->repository->query( $args );
+
+		$data = array_map(
+			function ( $log ) {
+				return array(
+					'id'          => (int) $log->id,
+					'event_type'  => $log->event_type,
+					'user_id'     => (int) $log->user_id,
+					'object_type' => $log->object_type,
+					'object_id'   => (int) $log->object_id,
+					'ip_address'  => $log->ip_address,
+					'message'     => $log->message,
+					'meta'        => json_decode( $log->meta, true ) ?? array(),
+					'created_at'  => $log->created_at,
+				);
+			},
+			$logs
+		);
+
+		return rest_ensure_response( $data );
 	}
 }
