@@ -7,9 +7,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Amin\AuditLogPro\Registrable;
 use Amin\AuditLogPro\Utility\Helper;
+use Amin\AuditLogPro\Database\EventRepository;
 use WP_User;
 
 class Logger implements Registrable {
+
+	private $repository = null;
+
+	public function __construct( EventRepository $repository ) {
+		$this->repository = $repository;
+	}
 
 	/**
 	 * Register all loggable hooks
@@ -48,7 +55,7 @@ class Logger implements Registrable {
 		}
 
 		if ( $user ) {
-			self::log( 'user_role_changed', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
+			$this->log( 'user_role_changed', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
 		}
 	}
 
@@ -60,14 +67,14 @@ class Logger implements Registrable {
 	 */
 	public function action_after_password_reset( $user, $new_pass ): void {
 		if ( $user instanceof WP_User ) {
-			self::log( 'user_password_reset', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s reset password', self::user_profile_updated_by( $user->ID ) ), array() );
+			$this->log( 'user_password_reset', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s reset password', self::user_profile_updated_by( $user->ID ) ), array() );
 		}
 	}
 
 	public function action_user_register( $user_id ): void {
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			self::log( 'user_registered', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s registered', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log( 'user_registered', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s registered', self::user_profile_updated_by( $user_id ) ), array() );
 		}
 	}
 
@@ -80,7 +87,7 @@ class Logger implements Registrable {
 		}
 
 		if ( $user ) {
-			self::log( 'user_profile_updated', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
+			$this->log( 'user_profile_updated', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), $message, array() );
 		}
 	}
 
@@ -103,7 +110,7 @@ class Logger implements Registrable {
 	public function action_delete_user( $user_id ): void {
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			self::log( 'user_deleted', get_current_user_id(), 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log( 'user_deleted', get_current_user_id(), 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ), array() );
 		}
 	}
 
@@ -116,11 +123,11 @@ class Logger implements Registrable {
 
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			self::log( 'user_logout', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged out', self::user_profile_updated_by( $user_id ) ), array() );
+			$this->log( 'user_logout', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged out', self::user_profile_updated_by( $user_id ) ), array() );
 		}
 	}
 
-	public static function log(
+	public function log(
 		string $event_type,
 		int $user_id,
 		string $object_type,
@@ -142,26 +149,10 @@ class Logger implements Registrable {
 			'meta'        => wp_json_encode( $meta ),
 		);
 
-		$format = array(
-			'%s',
-			'%d',
-			'%s',
-			'%d',
-			'%s',
-			'%s',
-			'%s',
-		);
-
-		$inserted = $wpdb->insert( $table, $data, $format );
-
-		if ( $inserted ) {
-			wp_cache_delete( 'adtlogpro_dashboard_summary', 'adtlogpro' );
-		} else {
-			error_log( __( 'AuditLogPro: log cannot be inserted. Please seek technical help or open support ticket', 'audit-log-pro' ) );
-		}
+		$this->repository->insert( $data );
 	}
 
 	public function log_login( string $username, WP_User $user ) {
-		self::log( 'user_login', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged in', $username ), array() );
+		$this->log( 'user_login', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged in', $username ), array() );
 	}
 }
