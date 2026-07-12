@@ -7,10 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Plugin's Database Schema
- * 
+ *
  * The whole system's database handler. Responsible to create new tables
  * Update tables.
- * 
+ *
  * @author Al Amin <hmalaminmb4@gmail.com>
  * @package AuditLogPro
  * @since 1.0.0
@@ -19,8 +19,8 @@ class Schema {
 
 	/**
 	 * Create Database Table
-     * 
-     * Create DB Table & update version number
+	 *
+	 * Create DB Table & update version number
 	 *
 	 * @return void
 	 */
@@ -50,6 +50,6 @@ class Schema {
 		require_once ABSPATH . '/wp-admin/includes/upgrade.php';
 		dbDelta( $query );
 
-        update_option( 'adtlogpro_db_version', ADTLOGPRO_DB_VERSION );
+		update_option( 'adtlogpro_db_version', ADTLOGPRO_DB_VERSION );
 	}
 }
