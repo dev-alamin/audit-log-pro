@@ -29,13 +29,7 @@ class Menu implements Registrable {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">Audit Log Pro</h1>
-			<?php
-			$repo = new EventRepository();
-
-			echo '<pre>';
-			print_r( $repo->query( array( 'per_page' => 5 ) ) );
-			echo '</pre>';
-			?>
+			<div id="adtlogpro-admin-root"></div>
 		</div>
 		<?php
 	}

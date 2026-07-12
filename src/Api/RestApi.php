@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Registrable;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -12,12 +13,18 @@ use WP_REST_Response;
 
 class RestApi implements Registrable {
 
+	private EventRepository $repository;
+
 	/**
 	 * Get logs namespace
 	 *
 	 * @since 1.0.0
 	 */
 	const NAMESPACE = 'adtlogpro/v1';
+
+	public function __construct( EventRepository $repository ) {
+		$this->repository = $repository;
+	}
 
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this, 'callback' ) );
@@ -30,7 +37,7 @@ class RestApi implements Registrable {
 			array(
 				'method'              => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logs' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => '__return_true', // MUST handle soon
 				'args'                => array(
 					'per_page' => array(
 						'description'       => __( 'Number of logs per page', 'audit-log-pro' ),
@@ -53,10 +60,14 @@ class RestApi implements Registrable {
 	}
 
 	public function get_logs( WP_REST_Request $request ): WP_REST_Response {
+		$data = array();
+
+		if ( isset( $request['per_page'] ) ) {
+			$data['per_page'] = $request['per_page'];
+		}
+
 		return rest_ensure_response(
-			array(
-				'Hello from get logs method' . __FILE__ . __LINE__,
-			)
+			$this->repository->query( $data ),
 		);
 	}
 }

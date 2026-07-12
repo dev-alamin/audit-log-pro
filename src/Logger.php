@@ -12,7 +12,7 @@ use WP_User;
 
 class Logger implements Registrable {
 
-	private $repository = null;
+	private EventRepository $repository;
 
 	public function __construct( EventRepository $repository ) {
 		$this->repository = $repository;
@@ -47,10 +47,14 @@ class Logger implements Registrable {
 	public function action_user_role_changed( $user_id, $new_role, $old_roles ) {
 		$user = get_userdata( $user_id );
 
+		if ( ! $user ) {
+			return;   // guard FIRST, before anything touches $user
+		}
+
 		$old_roles_str = implode( ', ', $old_roles );
 		$message       = sprintf(
 			'%s changed role from %s to %s',
-			self::user_profile_updated_by( $user_id ),
+			self::actor_name(),
 			$old_roles_str,
 			$new_role
 		);
@@ -58,7 +62,7 @@ class Logger implements Registrable {
 		if ( $user_id !== get_current_user_id() ) {
 			$message = sprintf(
 				'%s changed role of %s from %s to %s',
-				self::user_profile_updated_by( $user_id ),
+				self::actor_name(),
 				$user->user_login,
 				$old_roles_str,
 				$new_role
@@ -68,7 +72,7 @@ class Logger implements Registrable {
 		if ( $user ) {
 			$this->log(
 				'user_role_changed',
-				$user->ID,
+				get_current_user_id(),
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
@@ -88,13 +92,13 @@ class Logger implements Registrable {
 		if ( $user instanceof WP_User ) {
 			$this->log(
 				'user_password_reset',
-				$user->ID,
+				get_current_user_id(),
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
 				sprintf(
 					'%s reset password',
-					self::user_profile_updated_by( $user->ID )
+					self::actor_name()
 				),
 				array()
 			);
@@ -106,28 +110,31 @@ class Logger implements Registrable {
 		if ( $user ) {
 			$this->log(
 				'user_registered',
-				$user->ID,
+				get_current_user_id(),
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
-				sprintf( '%s registered', self::user_profile_updated_by( $user_id ) ),
+				sprintf( '%s registered', self::actor_name() ),
 				array()
 			);
 		}
 	}
 
 	public function action_profile_update( int $user_id, $old_user_data ): void {
-		$user    = get_userdata( $user_id );
-		$message = sprintf( '%s updated profile', self::user_profile_updated_by( $user->ID ) );
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return;   // guard FIRST, before anything touches $user
+		}
+		$message = sprintf( '%s updated profile', self::actor_name() );
 
 		if ( $user->ID !== get_current_user_id() ) {
-			$message = sprintf( '%s updated profile of %s', self::user_profile_updated_by( $user->ID ), $user->user_login );
+			$message = sprintf( '%s updated profile of %s', self::actor_name(), $user->user_login );
 		}
 
 		if ( $user ) {
 			$this->log(
 				'user_profile_updated',
-				$user->ID,
+				get_current_user_id(),
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
@@ -135,22 +142,6 @@ class Logger implements Registrable {
 				array()
 			);
 		}
-	}
-
-	public static function user_profile_updated_by( int $user_id ): string {
-		$user       = get_userdata( $user_id );
-		$changed_by = '';
-
-		if ( $user === get_current_user_id() ) {
-			$changed_by = self::actor_name();
-		} else {
-			$changed_by_user = get_userdata( get_current_user_id() );
-			if ( $changed_by_user ) {
-				$changed_by = $changed_by_user->user_login;
-			}
-		}
-
-		return $changed_by;
 	}
 
 	public function action_delete_user( int $user_id ): void {
@@ -162,7 +153,7 @@ class Logger implements Registrable {
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
-				sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ),
+				sprintf( '%s deleted', self::actor_name() ),
 				array()
 			);
 		}
@@ -183,13 +174,13 @@ class Logger implements Registrable {
 				'user',
 				$user->ID,
 				Helper::get_user_ip(),
-				sprintf( '%s logged out', self::user_profile_updated_by( $user_id ) ),
+				sprintf( '%s logged out', self::actor_name() ),
 				array()
 			);
 		}
 	}
 
-	public function log(
+	private function log(
 		string $event_type,
 		int $user_id,
 		string $object_type,

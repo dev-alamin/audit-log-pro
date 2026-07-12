@@ -56,7 +56,7 @@ class Plugin {
 
 		/** @var Registrable[] $modules */
 		$modules = array(
-			( new RestApi() ),
+			( new RestApi( new EventRepository() ) ),
 			( new Logger( new EventRepository() ) ),
 		);
 
