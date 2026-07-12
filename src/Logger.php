@@ -21,7 +21,7 @@ class Logger implements Registrable {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'wp_login', array( __CLASS__, 'log_login' ), 10, 2 );
+		add_action( 'wp_login', array( $this, 'log_login' ), 10, 2 );
 		add_action( 'wp_logout', array( $this, 'action_wp_logout' ) );
 		add_action( 'delete_user', array( $this, 'action_delete_user' ) );
 		add_action( 'profile_update', array( $this, 'action_profile_update' ), 10, 2 );
@@ -103,7 +103,7 @@ class Logger implements Registrable {
 	public function action_delete_user( $user_id ): void {
 		$user = get_userdata( $user_id );
 		if ( $user ) {
-			self::log( 'user_deleted', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ), array() );
+			self::log( 'user_deleted', get_current_user_id(), 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s deleted', self::user_profile_updated_by( $user_id ) ), array() );
 		}
 	}
 
@@ -137,7 +137,7 @@ class Logger implements Registrable {
 			'user_id'     => absint( $user_id ),
 			'object_type' => sanitize_key( $object_type ),
 			'object_id'   => absint( $object_id ),
-			'ip_address'  => wp_kses_post( $ip_adress ),
+			'ip_address'  => filter_var( $ip_adress, FILTER_VALIDATE_IP ),
 			'message'     => wp_kses_post( $message ),
 			'meta'        => wp_json_encode( $meta ),
 		);
@@ -147,7 +147,6 @@ class Logger implements Registrable {
 			'%d',
 			'%s',
 			'%d',
-			'%s',
 			'%s',
 			'%s',
 			'%s',
@@ -162,7 +161,7 @@ class Logger implements Registrable {
 		}
 	}
 
-	public static function log_login( string $username, WP_User $user ) {
+	public function log_login( string $username, WP_User $user ) {
 		self::log( 'user_login', $user->ID, 'user', $user->ID, Helper::get_user_ip( $user ), sprintf( '%s logged in', $username ), array() );
 	}
 }
