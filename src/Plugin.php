@@ -3,7 +3,7 @@ namespace Amin\AuditLogPro;
 
 use Amin\AuditLogPro\Database\Schema;
 use Amin\AuditLogPro\Api\RestApi;
-use Amin\AuditLogPro\Logger;
+use Amin\AuditLogPro\Loggers\UserLogger;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Admin\Menu;
 /**
@@ -57,7 +57,7 @@ class Plugin {
 		/** @var Registrable[] $modules */
 		$modules = array(
 			( new RestApi( new EventRepository() ) ),
-			( new Logger( new EventRepository() ) ),
+			( new UserLogger( new EventRepository() ) ),
 		);
 
 		foreach ( $modules as $module ) {

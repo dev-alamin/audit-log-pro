@@ -1,5 +1,5 @@
 <?php
-namespace Amin\AuditLogPro;
+namespace Amin\AuditLogPro\Loggers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -8,13 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Amin\AuditLogPro\Registrable;
 use Amin\AuditLogPro\Utility\Helper;
 use Amin\AuditLogPro\Database\EventRepository;
+use Amin\AuditLogPro\Services\WPBridge;
 use WP_User;
 
-class Logger implements Registrable {
+class UserLogger implements Registrable {
 
 	private EventRepository $repository;
+	private WPBridge $wp;
 
-	public function __construct( EventRepository $repository ) {
+	public function __construct( EventRepository $repository, WPBridge $wp ) {
+		$this->wp = $wp;
 		$this->repository = $repository;
 	}
 
@@ -45,7 +48,7 @@ class Logger implements Registrable {
 	 * @param array  $old_roles An array of the user's previous roles.
 	 */
 	public function action_user_role_changed( $user_id, $new_role, $old_roles ) {
-		$user = get_userdata( $user_id );
+		$user = $this->wp->get_userdata( $user_id );
 
 		if ( ! $user ) {
 			return;   // guard FIRST, before anything touches $user
@@ -54,15 +57,15 @@ class Logger implements Registrable {
 		$old_roles_str = implode( ', ', $old_roles );
 		$message       = sprintf(
 			'%s changed role from %s to %s',
-			self::actor_name(),
+			$this->wp->actor_name(),
 			$old_roles_str,
 			$new_role
 		);
 
-		if ( $user_id !== get_current_user_id() ) {
+		if ( $user_id !== $this->wp->get_current_user_id() ) {
 			$message = sprintf(
 				'%s changed role of %s from %s to %s',
-				self::actor_name(),
+				$this->wp->actor_name(),
 				$user->user_login,
 				$old_roles_str,
 				$new_role
@@ -72,10 +75,10 @@ class Logger implements Registrable {
 		if ( $user ) {
 			$this->log(
 				'user_role_changed',
-				get_current_user_id(),
+				$this->wp->get_current_user_id(),
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
+				$this->wp->get_user_ip(),
 				$message,
 				array()
 			);
@@ -92,13 +95,13 @@ class Logger implements Registrable {
 		if ( $user instanceof WP_User ) {
 			$this->log(
 				'user_password_reset',
-				get_current_user_id(),
+				$this->wp->get_current_user_id(),
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
+				$this->wp->get_user_ip(),
 				sprintf(
 					'%s reset password',
-					self::actor_name()
+					$this->wp->actor_name()
 				),
 				array()
 			);
@@ -106,38 +109,38 @@ class Logger implements Registrable {
 	}
 
 	public function action_user_register( int $user_id ): void {
-		$user = get_userdata( $user_id );
+		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
 			$this->log(
 				'user_registered',
-				get_current_user_id(),
+				$this->wp->get_current_user_id(),
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
-				sprintf( '%s registered', self::actor_name() ),
+				$this->wp->get_user_ip(),
+				sprintf( '%s registered', $this->wp->actor_name() ),
 				array()
 			);
 		}
 	}
 
 	public function action_profile_update( int $user_id, $old_user_data ): void {
-		$user = get_userdata( $user_id );
+		$user = $this->wp->get_userdata( $user_id );
 		if ( ! $user ) {
 			return;   // guard FIRST, before anything touches $user
 		}
-		$message = sprintf( '%s updated profile', self::actor_name() );
+		$message = sprintf( '%s updated profile', $this->wp->actor_name() );
 
-		if ( $user->ID !== get_current_user_id() ) {
-			$message = sprintf( '%s updated profile of %s', self::actor_name(), $user->user_login );
+		if ( $user->ID !== $this->wp->get_current_user_id() ) {
+			$message = sprintf( '%s updated profile of %s', $this->wp->actor_name(), $user->user_login );
 		}
 
 		if ( $user ) {
 			$this->log(
 				'user_profile_updated',
-				get_current_user_id(),
+				$this->wp->get_current_user_id(),
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
+				$this->wp->get_user_ip(),
 				$message,
 				array()
 			);
@@ -145,15 +148,15 @@ class Logger implements Registrable {
 	}
 
 	public function action_delete_user( int $user_id ): void {
-		$user = get_userdata( $user_id );
+		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
 			$this->log(
 				'user_deleted',
-				get_current_user_id(),
+				$this->wp->get_current_user_id(),
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
-				sprintf( '%s deleted', self::actor_name() ),
+				$this->wp->get_user_ip(),
+				sprintf( '%s deleted', $this->wp->actor_name() ),
 				array()
 			);
 		}
@@ -166,15 +169,15 @@ class Logger implements Registrable {
 	 */
 	public function action_wp_logout( $user_id ): void {
 
-		$user = get_userdata( $user_id );
+		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
 			$this->log(
 				'user_logout',
 				$user->ID,
 				'user',
 				$user->ID,
-				Helper::get_user_ip(),
-				sprintf( '%s logged out', self::actor_name() ),
+				$this->wp->get_user_ip(),
+				sprintf( '%s logged out', $this->wp->actor_name() ),
 				array()
 			);
 		}
@@ -214,14 +217,9 @@ class Logger implements Registrable {
 			$user->ID,
 			'user',
 			$user->ID,
-			Helper::get_user_ip(),
+			$this->wp->get_user_ip(),
 			sprintf( '%s logged in', $username ),
 			array()
 		);
-	}
-
-	private static function actor_name(): string {
-		$current = wp_get_current_user();
-		return $current->exists() ? $current->user_login : 'System';
 	}
 }
