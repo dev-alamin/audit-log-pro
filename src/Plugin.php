@@ -8,7 +8,7 @@ use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Admin\Menu;
 use Amin\AuditLogPro\Core\HookLoader;
 use Amin\AuditLogPro\Services\WPBridge;
-use Amin\AuditLogPro\Core\Capabilites;
+use Amin\AuditLogPro\Core\Capabilities;
 
 /**
  * Bootstraps the Audit Log Pro plugin.
@@ -23,7 +23,8 @@ class Plugin {
 
 	public function __construct() {
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Schema::class, 'create_table' ) );
-		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilites::class, 'add_caps_on_activation' ) );
+		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilities::class, 'add_caps_on_activation' ) );
+		register_deactivation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilities::class, 'remove_caps' ) );
 		add_action( 'plugins_loaded', array( $this, 'boot' ) );
 	}
 
