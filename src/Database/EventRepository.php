@@ -28,17 +28,19 @@ class EventRepository {
 	);
 
 	/**
-	 * Insert Logs
+	 * Insert a new activity log record securely.
 	 *
-	 * Plugin's main log inserter method
-	 *
-	 * @param array $data
-	 * @return boolean
+	 * @param array $data Raw log data from the app loggers.
+	 * @return bool True on successful creation, false otherwise.
 	 */
 	public function insert( array $data ): bool {
+		if ( count( array_intersect_key( self::COLUMNS, $data ) ) !== count( self::COLUMNS ) ) {
+			return false;
+		}
 
-		if ( array_diff_key( self::COLUMNS, $data ) ) {
-			return false; // Missing a required columns
+		$cleaned_data = $this->sanitize_and_validate( $data );
+		if ( ! $cleaned_data ) {
+			return false;
 		}
 
 		global $wpdb;
@@ -46,7 +48,7 @@ class EventRepository {
 
 		$inserted = $wpdb->insert(
 			$table,
-			$data,
+			$cleaned_data,
 			array_values( self::COLUMNS )
 		);
 
@@ -55,6 +57,26 @@ class EventRepository {
 		}
 
 		return (bool) $inserted;
+	}
+
+	/**
+	 * Keeps database pollution clean by running strict type checks and WP sanitization functions.
+	 *
+	 * @param array $data
+	 * @return array|false Cleaned data array or false on system validation failures.
+	 */
+	private function sanitize_and_validate( array $data ): array|false {
+		$ip = filter_var( $data['ip_address'], FILTER_VALIDATE_IP );
+
+		return array(
+			'event_type'  => sanitize_key( $data['event_type'] ),
+			'user_id'     => absint( $data['user_id'] ),
+			'object_type' => sanitize_key( $data['object_type'] ),
+			'object_id'   => absint( $data['object_id'] ),
+			'ip_address'  => $ip ? $ip : '0.0.0.0', // Fallback placeholder safely
+			'message'     => wp_kses_post( $data['message'] ),
+			'meta'        => is_array( $data['meta'] ) ? wp_json_encode( $data['meta'] ) : $data['meta'],
+		);
 	}
 
 	/**
