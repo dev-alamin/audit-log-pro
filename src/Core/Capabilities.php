@@ -37,7 +37,7 @@ class Capabilities {
 
 		$editor = get_role( 'editor' );
 		if ( $editor ) {
-			$editor->add_cap( self::view() ); // Only view log for editor
+			$editor->add_cap( self::view() ); // Only view log for editor.
 		}
 	}
 

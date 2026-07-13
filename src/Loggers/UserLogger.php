@@ -12,10 +12,32 @@ use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
 use WP_User;
 
+/**
+ * Logs user-related activities.
+ *
+ * @since 1.0.0
+ */
 class UserLogger implements Registrable {
 
+	/**
+	 * Event repository.
+	 *
+	 * @var EventRepository
+	 */
 	private EventRepository $repository;
+
+	/**
+	 * WPBridge for native WP functions.
+	 *
+	 * @var WPBridge
+	 */
 	private WPBridge $wp;
+
+	/**
+	 * Hook loader.
+	 *
+	 * @var HookLoader
+	 */
 	private HookLoader $loader;
 
 	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
@@ -198,6 +220,12 @@ class UserLogger implements Registrable {
 		}
 	}
 
+	/**
+	 * Logs a successful login.
+	 *
+	 * @param string  $username Username.
+	 * @param WP_User $user     User object.
+	 */
 	public function log_login( string $username, WP_User $user ) {
 		$this->repository->insert(
 			new Event(

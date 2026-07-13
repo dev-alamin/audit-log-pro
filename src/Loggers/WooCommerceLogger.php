@@ -35,8 +35,25 @@ class WooCommerceLogger implements Registrable {
 		'checkout-draft',
 	);
 
+	/**
+	 * Event repository.
+	 *
+	 * @var EventRepository
+	 */
 	private EventRepository $repository;
+
+	/**
+	 * WPBridge for native WP functions.
+	 *
+	 * @var WPBridge
+	 */
 	private WPBridge $wp;
+
+	/**
+	 * Hook loader.
+	 *
+	 * @var HookLoader
+	 */
 	private HookLoader $loader;
 
 	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
