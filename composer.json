@@ -45,6 +45,8 @@
         "lint:fix": "vendor/bin/phpcbf",
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/phpunit",
+        "test:unit": "vendor/bin/phpunit -c phpunit.unit.xml.dist",
+        "test:integration": "vendor/bin/phpunit -c phpunit.xml.dist --testsuite=integration",
         "qa": [
             "@lint",
             "@analyse",

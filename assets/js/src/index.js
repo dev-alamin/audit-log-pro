@@ -1,5 +1,4 @@
-import { createRoot, useState, useEffect } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
+import { createRoot } from '@wordpress/element';
 import LogsTable from './components/LogsTable';
 import './style.css';
 

@@ -170,12 +170,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "04ba49c3a26e9b1a5ae3d020d0bb88068860597b"
+                "reference": "fbd47f7ebcbb450138d92642a0a53b72a5285dda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/04ba49c3a26e9b1a5ae3d020d0bb88068860597b",
-                "reference": "04ba49c3a26e9b1a5ae3d020d0bb88068860597b",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/fbd47f7ebcbb450138d92642a0a53b72a5285dda",
+                "reference": "fbd47f7ebcbb450138d92642a0a53b72a5285dda",
                 "shasum": ""
             },
             "require": {
@@ -220,7 +220,7 @@
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
                 "source": "https://github.com/nikic/PHP-Parser/tree/master"
             },
-            "time": "2026-07-10T17:52:10+00:00"
+            "time": "2026-07-11T16:03:13+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -347,12 +347,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/wordpress-stubs.git",
-                "reference": "b753c9270f7175fae8a6c06b49e35da9c1a017de"
+                "reference": "04ebb2e841429038322c92043154a0ff5641e3c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/b753c9270f7175fae8a6c06b49e35da9c1a017de",
-                "reference": "b753c9270f7175fae8a6c06b49e35da9c1a017de",
+                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/04ebb2e841429038322c92043154a0ff5641e3c9",
+                "reference": "04ebb2e841429038322c92043154a0ff5641e3c9",
                 "shasum": ""
             },
             "conflict": {
@@ -392,7 +392,7 @@
                 "issues": "https://github.com/php-stubs/wordpress-stubs/issues",
                 "source": "https://github.com/php-stubs/wordpress-stubs/tree/master"
             },
-            "time": "2026-07-10T10:23:10+00:00"
+            "time": "2026-07-12T08:38:49+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
@@ -576,8 +576,8 @@
             "version": "2.2.x-dev",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a6b87aadb4c1447ccfbf55909427980d4385df77",
-                "reference": "a6b87aadb4c1447ccfbf55909427980d4385df77",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f8e7061c817c7c19dc20fe1ae41b6ebf4abf8c04",
+                "reference": "f8e7061c817c7c19dc20fe1ae41b6ebf4abf8c04",
                 "shasum": ""
             },
             "require": {
@@ -634,7 +634,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-11T12:24:33+00:00"
+            "time": "2026-07-12T17:01:28+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1023,12 +1023,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1e6e8f5e1880a055b5be39c30f9d485bfd8e29df"
+                "reference": "7f1c7bdeb1cb8f5fc470bc1829bac9d5c5225660"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1e6e8f5e1880a055b5be39c30f9d485bfd8e29df",
-                "reference": "1e6e8f5e1880a055b5be39c30f9d485bfd8e29df",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7f1c7bdeb1cb8f5fc470bc1829bac9d5c5225660",
+                "reference": "7f1c7bdeb1cb8f5fc470bc1829bac9d5c5225660",
                 "shasum": ""
             },
             "require": {
@@ -1105,7 +1105,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-07-08T09:02:01+00:00"
+            "time": "2026-07-12T05:01:22+00:00"
         },
         {
             "name": "sebastian/cli-parser",
