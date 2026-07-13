@@ -7,7 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Amin\AuditLogPro\Registrable;
 use Override;
-use Amin\AuditLogPro\Database\EventRepository;
 
 class Menu implements Registrable {
 	#[Override]
