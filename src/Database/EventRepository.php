@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class EventRepository {
 
+	private function __construct() {}
+
 	private const COLUMNS = array(
 		'event_type'  => '%s',
 		'user_id'     => '%d',
