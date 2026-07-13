@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Amin\AuditLogPro\Registrable;
-use Amin\AuditLogPro\Utility\Helper;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Services\WPBridge;
 use WP_User;
@@ -17,7 +16,7 @@ class UserLogger implements Registrable {
 	private WPBridge $wp;
 
 	public function __construct( EventRepository $repository, WPBridge $wp ) {
-		$this->wp = $wp;
+		$this->wp         = $wp;
 		$this->repository = $repository;
 	}
 

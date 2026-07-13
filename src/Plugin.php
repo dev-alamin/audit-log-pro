@@ -6,6 +6,8 @@ use Amin\AuditLogPro\Api\RestApi;
 use Amin\AuditLogPro\Loggers\UserLogger;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Admin\Menu;
+use Amin\AuditLogPro\Services\WPBridge;
+
 /**
  * Bootstraps the Audit Log Pro plugin.
  *
@@ -57,7 +59,7 @@ class Plugin {
 		/** @var Registrable[] $modules */
 		$modules = array(
 			( new RestApi( new EventRepository() ) ),
-			( new UserLogger( new EventRepository() ) ),
+			( new UserLogger( new EventRepository(), new WPBridge() ) ),
 		);
 
 		foreach ( $modules as $module ) {
