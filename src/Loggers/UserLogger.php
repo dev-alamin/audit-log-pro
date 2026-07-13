@@ -5,8 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Amin\AuditLogPro\Core\HookLoader;
 use Amin\AuditLogPro\Registrable;
 use Amin\AuditLogPro\Database\EventRepository;
+use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
 use WP_User;
 
@@ -14,10 +16,12 @@ class UserLogger implements Registrable {
 
 	private EventRepository $repository;
 	private WPBridge $wp;
+	private HookLoader $loader;
 
-	public function __construct( EventRepository $repository, WPBridge $wp ) {
+	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
 		$this->wp         = $wp;
 		$this->repository = $repository;
+		$this->loader     = $loader;
 	}
 
 	/**
@@ -30,13 +34,13 @@ class UserLogger implements Registrable {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'wp_login', array( $this, 'log_login' ), 10, 2 );
-		add_action( 'wp_logout', array( $this, 'action_wp_logout' ) );
-		add_action( 'delete_user', array( $this, 'action_delete_user' ) );
-		add_action( 'profile_update', array( $this, 'action_profile_update' ), 10, 2 );
-		add_action( 'user_register', array( $this, 'action_user_register' ), 10, 1 );
-		add_action( 'after_password_reset', array( $this, 'action_after_password_reset' ), 10, 2 );
-		add_action( 'set_user_role', array( $this, 'action_user_role_changed' ), 10, 3 );
+		$this->loader->add_action( 'wp_login', array( $this, 'log_login' ), 10, 2 );
+		$this->loader->add_action( 'wp_logout', array( $this, 'action_wp_logout' ) );
+		$this->loader->add_action( 'delete_user', array( $this, 'action_delete_user' ) );
+		$this->loader->add_action( 'profile_update', array( $this, 'action_profile_update' ), 10, 2 );
+		$this->loader->add_action( 'user_register', array( $this, 'action_user_register' ), 10, 1 );
+		$this->loader->add_action( 'after_password_reset', array( $this, 'action_after_password_reset' ), 10, 2 );
+		$this->loader->add_action( 'set_user_role', array( $this, 'action_user_role_changed' ), 10, 3 );
 	}
 
 	/**
@@ -71,16 +75,21 @@ class UserLogger implements Registrable {
 			);
 		}
 
-		if ( $user ) {
-			$this->log(
-				'user_role_changed',
-				$this->wp->get_current_user_id(),
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				$message,
-				array()
-			);
+		$event = new Event(
+			type       : 'user_role_changed',
+			actor_id   : $this->wp->get_current_user_id(),
+			object_type: 'user',
+			object_id  : $user->ID,
+			ip         : $this->wp->get_user_ip(),
+			message    : $message,
+			meta       : array(),
+		);
+
+		$inserted = $this->repository->insert( $event );
+		if ( $inserted ) {
+			error_log( 'User role changed: ' . $inserted );
+		} else {
+			error_log( 'User role cannot be changed' );
 		}
 	}
 
@@ -92,17 +101,16 @@ class UserLogger implements Registrable {
 	 */
 	public function action_after_password_reset( $user, $new_pass ): void {
 		if ( $user instanceof WP_User ) {
-			$this->log(
-				'user_password_reset',
-				$this->wp->get_current_user_id(),
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				sprintf(
-					'%s reset password',
-					$this->wp->actor_name()
-				),
-				array()
+			$this->repository->insert(
+				new Event(
+					type       : 'user_password_reset',
+					actor_id   : $this->wp->get_current_user_id(),
+					object_type: 'user',
+					object_id  : $user->ID,
+					ip         : $this->wp->get_user_ip(),
+					message    : sprintf( '%s reset password', $this->wp->actor_name() ),
+					meta       : array(),
+				)
 			);
 		}
 	}
@@ -110,14 +118,16 @@ class UserLogger implements Registrable {
 	public function action_user_register( int $user_id ): void {
 		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
-			$this->log(
-				'user_registered',
-				$this->wp->get_current_user_id(),
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				sprintf( '%s registered', $this->wp->actor_name() ),
-				array()
+			$this->repository->insert(
+				new Event(
+					type       : 'user_registered',
+					actor_id   : $this->wp->get_current_user_id(),
+					object_type: 'user',
+					object_id  : $user->ID,
+					ip         : $this->wp->get_user_ip(),
+					message    : sprintf( '%s registered', $this->wp->actor_name() ),
+					meta       : array(),
+				)
 			);
 		}
 	}
@@ -134,14 +144,16 @@ class UserLogger implements Registrable {
 		}
 
 		if ( $user ) {
-			$this->log(
-				'user_profile_updated',
-				$this->wp->get_current_user_id(),
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				$message,
-				array()
+			$this->repository->insert(
+				new Event(
+					type       : 'user_profile_updated',
+					actor_id   : $this->wp->get_current_user_id(),
+					object_type: 'user',
+					object_id  : $user->ID,
+					ip         : $this->wp->get_user_ip(),
+					message    : $message,
+					meta       : array(),
+				)
 			);
 		}
 	}
@@ -149,14 +161,16 @@ class UserLogger implements Registrable {
 	public function action_delete_user( int $user_id ): void {
 		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
-			$this->log(
-				'user_deleted',
-				$this->wp->get_current_user_id(),
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				sprintf( '%s deleted', $this->wp->actor_name() ),
-				array()
+			$this->repository->insert(
+				new Event(
+					type       : 'user_deleted',
+					actor_id   : $this->wp->get_current_user_id(),
+					object_type: 'user',
+					object_id  : $user->ID,
+					ip         : $this->wp->get_user_ip(),
+					message    : sprintf( '%s deleted', $this->wp->actor_name() ),
+					meta       : array(),
+				)
 			);
 		}
 	}
@@ -170,55 +184,31 @@ class UserLogger implements Registrable {
 
 		$user = $this->wp->get_userdata( $user_id );
 		if ( $user ) {
-			$this->log(
-				'user_logout',
-				$user->ID,
-				'user',
-				$user->ID,
-				$this->wp->get_user_ip(),
-				sprintf( '%s logged out', $this->wp->actor_name() ),
-				array()
+			$this->repository->insert(
+				new Event(
+					type       : 'user_logout',
+					actor_id   : $user->ID,
+					object_type: 'user',
+					object_id  : $user->ID,
+					ip         : $this->wp->get_user_ip(),
+					message    : sprintf( '%s logged out', $user->user_login ),
+					meta       : array(),
+				)
 			);
 		}
 	}
 
-	private function log(
-		string $event_type,
-		int $user_id,
-		string $object_type,
-		int $object_id,
-		string $ip_adress,
-		string $message,
-		array $meta
-	) {
-
-		$data = array(
-			'event_type'  => sanitize_key( $event_type ),
-			'user_id'     => absint( $user_id ),
-			'object_type' => sanitize_key( $object_type ),
-			'object_id'   => absint( $object_id ),
-			'ip_address'  => filter_var( $ip_adress, FILTER_VALIDATE_IP ),
-			'message'     => wp_kses_post( $message ),
-			'meta'        => wp_json_encode( $meta ),
-		);
-
-		$inserted = $this->repository->insert( $data );
-
-		if ( ! $inserted ) {
-			do_action( 'adtlogpro_log_insertion_failed', $data );
-			error_log( 'Activity log cannot be inserted, please seek technical help' );
-		}
-	}
-
 	public function log_login( string $username, WP_User $user ) {
-		$this->log(
-			'user_login',
-			$user->ID,
-			'user',
-			$user->ID,
-			$this->wp->get_user_ip(),
-			sprintf( '%s logged in', $username ),
-			array()
+		$this->repository->insert(
+			new Event(
+				type       : 'user_login',
+				actor_id   : $user->ID,
+				object_type: 'user',
+				object_id  : $user->ID,
+				ip         : $this->wp->get_user_ip(),
+				message    : sprintf( '%s logged in', $username ),
+				meta       : array(),
+			)
 		);
 	}
 }

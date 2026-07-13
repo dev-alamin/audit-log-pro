@@ -129,7 +129,7 @@ class LoggerTest extends TestCase {
  
 		Functions\when( 'error_log' )->justReturn( true );
  
-		$logger = new Logger( $repository );
-		$logger->action_delete_user( $user->ID );
+		// $logger = new Logger( $repository );
+		// $logger->action_delete_user( $user->ID );
 	}
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Amin\AuditLogPro\Database;
 
+use Amin\AuditLogPro\Database\Event;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -30,15 +32,12 @@ class EventRepository {
 	/**
 	 * Insert a new activity log record securely.
 	 *
-	 * @param array $data Raw log data from the app loggers.
+	 * @param Event $event Raw log data from the app loggers.
 	 * @return bool True on successful creation, false otherwise.
 	 */
-	public function insert( array $data ): bool {
-		if ( count( array_intersect_key( self::COLUMNS, $data ) ) !== count( self::COLUMNS ) ) {
-			return false;
-		}
+	public function insert( Event $event ): bool {
 
-		$cleaned_data = $this->sanitize_and_validate( $data );
+		$cleaned_data = $this->sanitize_and_validate( $event );
 		if ( ! $cleaned_data ) {
 			return false;
 		}
@@ -54,6 +53,9 @@ class EventRepository {
 
 		if ( $inserted ) {
 			wp_cache_delete( 'adtlogpro_dashboard_summary', 'adtlogpro' );
+			error_log( 'Data inserted' );
+		} else {
+			error_log( 'Data cannot be inserted. ' . $wpdb->last_error );
 		}
 
 		return (bool) $inserted;
@@ -62,20 +64,20 @@ class EventRepository {
 	/**
 	 * Keeps database pollution clean by running strict type checks and WP sanitization functions.
 	 *
-	 * @param array $data
+	 * @param Event $event
 	 * @return array|false Cleaned data array or false on system validation failures.
 	 */
-	private function sanitize_and_validate( array $data ): array|false {
-		$ip = filter_var( $data['ip_address'], FILTER_VALIDATE_IP );
+	private function sanitize_and_validate( Event $event ): array|false {
+		$ip = filter_var( $event->ip, FILTER_VALIDATE_IP );
 
 		return array(
-			'event_type'  => sanitize_key( $data['event_type'] ),
-			'user_id'     => absint( $data['user_id'] ),
-			'object_type' => sanitize_key( $data['object_type'] ),
-			'object_id'   => absint( $data['object_id'] ),
+			'event_type'  => sanitize_key( $event->type ),
+			'user_id'     => absint( $event->actor_id ),
+			'object_type' => sanitize_key( $event->object_type ),
+			'object_id'   => absint( $event->object_id ),
 			'ip_address'  => $ip ? $ip : '0.0.0.0', // Fallback placeholder safely
-			'message'     => wp_kses_post( $data['message'] ),
-			'meta'        => is_array( $data['meta'] ) ? wp_json_encode( $data['meta'] ) : $data['meta'],
+			'message'     => wp_kses_post( $event->message ),
+			'meta'        => is_array( $event->meta ) ? wp_json_encode( $event->meta ) : $event->meta,
 		);
 	}
 
