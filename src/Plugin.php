@@ -11,6 +11,7 @@ use Amin\AuditLogPro\Services\WPBridge;
 use Amin\AuditLogPro\Core\Capabilities;
 use Amin\AuditLogPro\Loggers\OptionLogger;
 use Amin\AuditLogPro\Loggers\PostLogger;
+use Amin\AuditLogPro\Loggers\WooCommerceLogger;
 
 /**
  * Bootstraps the Audit Log Pro plugin.
@@ -72,6 +73,7 @@ class Plugin {
 			( new UserLogger( $repository, $wp, $loader ) ),
 			( new PostLogger( $repository, $wp, $loader ) ),
 			( new OptionLogger( $repository, $wp, $loader ) ),
+			( new WooCommerceLogger( $repository, $wp, $loader ) ),
 		);
 
 		foreach ( $modules as $module ) {
