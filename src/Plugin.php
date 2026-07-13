@@ -9,6 +9,7 @@ use Amin\AuditLogPro\Admin\Menu;
 use Amin\AuditLogPro\Core\HookLoader;
 use Amin\AuditLogPro\Services\WPBridge;
 use Amin\AuditLogPro\Core\Capabilities;
+use Amin\AuditLogPro\Loggers\PostLogger;
 
 /**
  * Bootstraps the Audit Log Pro plugin.
@@ -68,6 +69,7 @@ class Plugin {
 		$modules = array(
 			( new RestApi( $repository ) ),
 			( new UserLogger( $repository, $wp, $loader ) ),
+			( new PostLogger( $repository, $wp, $loader ) ),
 		);
 
 		foreach ( $modules as $module ) {

@@ -61,4 +61,8 @@ class WPBridge {
 		$current = $this->get_current_user();
 		return $current->exists() ? $current->user_login : 'System';
 	}
+
+	public function get_post( int $post ) {
+		return get_post( $post );
+	}
 }
