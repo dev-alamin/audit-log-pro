@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Amin\AuditLogPro\Loggers\LoggerInterface;
+use Amin\AuditLogPro\RegistrationInterface;
 use Override;
 
 /**
@@ -16,9 +16,10 @@ use Override;
  * @since 1.0.0
  * @author Al amin <hmalaminmb@gmail.com>
  */
-class Menu implements LoggerInterface {
+class Menu implements RegistrationInterface {
+
 	#[Override]
-	public function register(): void {
+	public function register_hook(): void {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 	}
 

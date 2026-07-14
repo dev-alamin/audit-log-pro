@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Amin\AuditLogPro\Database\EventRepository;
-use Amin\AuditLogPro\Loggers\LoggerInterface;
+use Amin\AuditLogPro\RegistrationInterface;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
@@ -21,7 +21,7 @@ use WP_REST_Response;
  * @author Al Amin <hmalaminmb4@gmail.com>
  * @package AuditLogPro
  */
-class RestApi implements LoggerInterface {
+class RestApi implements RegistrationInterface {
 
 	/**
 	 * Database container repository
@@ -51,8 +51,8 @@ class RestApi implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function register(): void {
-		add_action( 'rest_api_init', array( $this, 'callback' ) );
+	public function register_hook(): void {
+		add_action( 'rest_api_init', array( $this, 'adtlogpro_rest_cb' ) );
 	}
 
 	/**
@@ -60,14 +60,16 @@ class RestApi implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function callback() {
+	public function adtlogpro_rest_cb() {
 		register_rest_route(
 			self::NAMESPACE,
 			'/logs/',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logs' ),
-				'permission_callback' => '__return_true', // MUST handle soon
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				}, // MUST handle soon.
 				'args'                => array(
 					'per_page' => array(
 						'description'       => __( 'Number of logs per page', 'audit-log-pro' ),

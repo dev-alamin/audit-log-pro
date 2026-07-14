@@ -1,11 +1,8 @@
 <?php
 namespace Amin\AuditLogPro\Loggers;
 
-use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Loggers\LoggerInterface;
-use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
-use Amin\AuditLogPro\Services\WPBridge;
+use Amin\AuditLogPro\Loggers\AbstractLogger;
 use WC_Order;
 use WC_Product;
 
@@ -24,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This logger should only be registered when WooCommerce is active —
  * that check belongs in the loader/bootstrap, not here.
  */
-class WooCommerceLogger implements LoggerInterface {
+class WooCommerceLogger extends AbstractLogger {
 
 	/**
 	 * Order statuses whose transitions are noise for an audit trail
@@ -36,45 +33,11 @@ class WooCommerceLogger implements LoggerInterface {
 	);
 
 	/**
-	 * Event repository.
-	 *
-	 * @var EventRepository
-	 */
-	private EventRepository $repository;
-
-	/**
-	 * WPBridge for native WP functions.
-	 *
-	 * @var WPBridge
-	 */
-	private WPBridge $wp;
-
-	/**
-	 * Hook loader.
-	 *
-	 * @var HookLoader
-	 */
-	private HookLoader $loader;
-
-	/**
-	 * Constructor for WooCommerceLogger.
-	 *
-	 * @param EventRepository $repository
-	 * @param WPBridge        $wp
-	 * @param HookLoader      $loader
-	 */
-	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
-		$this->wp         = $wp;
-		$this->repository = $repository;
-		$this->loader     = $loader;
-	}
-
-	/**
 	 * Register contract implementation.
 	 *
 	 * @return void
 	 */
-	public function register(): void {
+	public function register_hook(): void {
 		// Orders — CRUD-level, HPOS-safe.
 		$this->loader->add_action( 'woocommerce_new_order', array( $this, 'order_created' ), 10, 2 );
 		$this->loader->add_action( 'woocommerce_order_status_changed', array( $this, 'order_status_changed' ), 10, 4 );

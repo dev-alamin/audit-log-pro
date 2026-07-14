@@ -1,8 +1,8 @@
 <?php
-namespace Amin\AuditLogPro\Loggers;
+namespace Amin\AuditLogPro;
 
 /**
- * Contract for register
+ * Contract for registering hooks
  *
  * All hooks class can use it
  * Any class will add action filter, add action
@@ -12,11 +12,11 @@ namespace Amin\AuditLogPro\Loggers;
  * @package AuditLogPro
  * @author Al Amin <hmalaminmb4@gmail.com>
  */
-interface LoggerInterface {
+interface RegistrationInterface {
 	/**
 	 * Register contract
 	 *
 	 * @return void
 	 */
-	public function register(): void;
+	public function register_hook(): void;
 }

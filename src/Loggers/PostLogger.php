@@ -1,11 +1,8 @@
 <?php
 namespace Amin\AuditLogPro\Loggers;
 
-use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Loggers\LoggerInterface;
-use Amin\AuditLogPro\Database\EventRepository;
+use Amin\AuditLogPro\Loggers\AbstractLogger;
 use Amin\AuditLogPro\Database\Event;
-use Amin\AuditLogPro\Services\WPBridge;
 use WP_Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author Al Amin <hmalaminmb4@gmail.com>
  * @package AuditLogPro
  */
-class PostLogger implements LoggerInterface {
+class PostLogger extends AbstractLogger {
 
 	/**
 	 * Post types we never want to audit — internal/system content,
@@ -34,45 +31,11 @@ class PostLogger implements LoggerInterface {
 	);
 
 	/**
-	 * Event repository.
-	 *
-	 * @var EventRepository
-	 */
-	private EventRepository $repository;
-
-	/**
-	 * WPBridge for native WP functions.
-	 *
-	 * @var WPBridge
-	 */
-	private WPBridge $wp;
-
-	/**
-	 * Hook loader.
-	 *
-	 * @var HookLoader
-	 */
-	private HookLoader $loader;
-
-	/**
-	 * Constructor for PostLogger.
-	 *
-	 * @param EventRepository $repository
-	 * @param WPBridge        $wp
-	 * @param HookLoader      $loader
-	 */
-	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
-		$this->wp         = $wp;
-		$this->repository = $repository;
-		$this->loader     = $loader;
-	}
-
-	/**
 	 * Implement register contract.
 	 *
 	 * @return void
 	 */
-	public function register(): void {
+	public function register_hook(): void {
 		$this->loader->add_action( 'wp_after_insert_post', array( $this, 'after_insert' ), 10, 4 );
 		$this->loader->add_action( 'transition_post_status', array( $this, 'status_changed' ), 10, 3 );
 		$this->loader->add_action( 'trashed_post', array( $this, 'trashed' ) );

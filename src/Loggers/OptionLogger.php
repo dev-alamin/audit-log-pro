@@ -1,11 +1,8 @@
 <?php
 namespace Amin\AuditLogPro\Loggers;
 
-use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Loggers\LoggerInterface;
-use Amin\AuditLogPro\Database\EventRepository;
+use Amin\AuditLogPro\Loggers\AbstractLogger;
 use Amin\AuditLogPro\Database\Event;
-use Amin\AuditLogPro\Services\WPBridge;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -17,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  * @package AuditLogPro
  */
-class OptionLogger implements LoggerInterface {
+class OptionLogger extends AbstractLogger {
 
 	/**
 	 * Option name prefixes that fire on nearly every request and carry
@@ -85,34 +82,7 @@ class OptionLogger implements LoggerInterface {
 	 */
 	private const VALUE_MAX_LENGTH = 200;
 
-	/**
-	 * Event repository.
-	 *
-	 * @var EventRepository
-	 */
-	private EventRepository $repository;
-
-	/**
-	 * WPBridge for native WP functions.
-	 *
-	 * @var WPBridge
-	 */
-	private WPBridge $wp;
-
-	/**
-	 * Hook loader.
-	 *
-	 * @var HookLoader
-	 */
-	private HookLoader $loader;
-
-	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
-		$this->wp         = $wp;
-		$this->repository = $repository;
-		$this->loader     = $loader;
-	}
-
-	public function register(): void {
+	public function register_hook(): void {
 		$this->loader->add_action( 'added_option', array( $this, 'added' ), 10, 2 );
 		$this->loader->add_action( 'updated_option', array( $this, 'updated' ), 10, 3 );
 		$this->loader->add_action( 'deleted_option', array( $this, 'deleted' ), 10, 1 );

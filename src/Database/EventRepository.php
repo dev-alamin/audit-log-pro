@@ -55,9 +55,6 @@ class EventRepository {
 
 		if ( $inserted ) {
 			wp_cache_delete( 'adtlogpro_dashboard_summary', 'adtlogpro' );
-			error_log( 'Data inserted' );
-		} else {
-			error_log( 'Data cannot be inserted. ' . $wpdb->last_error );
 		}
 
 		return (bool) $inserted;
@@ -159,6 +156,13 @@ class EventRepository {
 		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
 		$values[] = $args['per_page'];
 
-		return $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * 
+				FROM {$table} 
+				WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d',
+				...$values
+			)
+		);
 	}
 }

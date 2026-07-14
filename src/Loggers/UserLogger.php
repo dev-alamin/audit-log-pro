@@ -5,11 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Loggers\LoggerInterface;
-use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
-use Amin\AuditLogPro\Services\WPBridge;
+use Amin\AuditLogPro\Loggers\AbstractLogger;
 use WP_User;
 
 /**
@@ -17,41 +14,7 @@ use WP_User;
  *
  * @since 1.0.0
  */
-class UserLogger implements LoggerInterface {
-
-	/**
-	 * Event repository.
-	 *
-	 * @var EventRepository
-	 */
-	private EventRepository $repository;
-
-	/**
-	 * WPBridge for native WP functions.
-	 *
-	 * @var WPBridge
-	 */
-	private WPBridge $wp;
-
-	/**
-	 * Hook loader.
-	 *
-	 * @var HookLoader
-	 */
-	private HookLoader $loader;
-
-	/**
-	 * Constructor for UserLogger.
-	 *
-	 * @param EventRepository $repository
-	 * @param WPBridge        $wp
-	 * @param HookLoader      $loader
-	 */
-	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
-		$this->wp         = $wp;
-		$this->repository = $repository;
-		$this->loader     = $loader;
-	}
+class UserLogger extends AbstractLogger {
 
 	/**
 	 * Register all loggable hooks
@@ -62,7 +25,7 @@ class UserLogger implements LoggerInterface {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function register(): void {
+	public function register_hook(): void {
 		$this->loader->add_action( 'wp_login', array( $this, 'log_login' ), 10, 2 );
 		$this->loader->add_action( 'wp_logout', array( $this, 'action_wp_logout' ) );
 		$this->loader->add_action( 'delete_user', array( $this, 'action_delete_user' ) );
@@ -114,12 +77,7 @@ class UserLogger implements LoggerInterface {
 			meta       : array(),
 		);
 
-		$inserted = $this->repository->insert( $event );
-		if ( $inserted ) {
-			error_log( 'User role changed: ' . $inserted );
-		} else {
-			error_log( 'User role cannot be changed' );
-		}
+		$this->repository->insert( $event );
 	}
 
 	/**

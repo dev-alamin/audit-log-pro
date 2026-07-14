@@ -12,6 +12,7 @@ use Amin\AuditLogPro\Core\Capabilities;
 use Amin\AuditLogPro\Loggers\OptionLogger;
 use Amin\AuditLogPro\Loggers\PostLogger;
 use Amin\AuditLogPro\Loggers\WooCommerceLogger;
+use Amin\AuditLogPro\Registrable;
 
 /**
  * Bootstraps the Audit Log Pro plugin.
@@ -63,7 +64,7 @@ class Plugin {
 	public function boot(): void {
 		if ( is_admin() ) {
 			$this->maybe_upgrade_database();
-			( new Menu() )->register();
+			( new Menu() )->register_hook();
 		}
 
 		$loader     = new HookLoader();
@@ -72,15 +73,15 @@ class Plugin {
 
 		/** @var LoggerInterface[] $modules */
 		$modules = array(
-			( new RestApi( $repository ) ),
 			( new UserLogger( $repository, $wp, $loader ) ),
 			( new PostLogger( $repository, $wp, $loader ) ),
 			( new OptionLogger( $repository, $wp, $loader ) ),
 			( new WooCommerceLogger( $repository, $wp, $loader ) ),
+			( new RestApi( $repository ) ), // It has no DI deps.
 		);
 
 		foreach ( $modules as $module ) {
-			$module->register();
+			$module->register_hook();
 		}
 
 		$loader->run();
