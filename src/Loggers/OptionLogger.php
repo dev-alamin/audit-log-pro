@@ -2,7 +2,7 @@
 namespace Amin\AuditLogPro\Loggers;
 
 use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class OptionLogger implements Registrable {
+class OptionLogger implements LoggerInterface {
 
 	/**
 	 * Option name prefixes that fire on nearly every request and carry

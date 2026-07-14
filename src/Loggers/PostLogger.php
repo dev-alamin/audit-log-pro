@@ -2,7 +2,7 @@
 namespace Amin\AuditLogPro\Loggers;
 
 use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class PostLogger implements Registrable {
+class PostLogger implements LoggerInterface {
 
 	/**
 	 * Post types we never want to audit — internal/system content,

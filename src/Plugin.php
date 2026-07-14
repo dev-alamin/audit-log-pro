@@ -67,7 +67,7 @@ class Plugin {
 		$wp         = new WPBridge();
 		$repository = new EventRepository();
 
-		/** @var Registrable[] $modules */
+		/** @var LoggerInterface[] $modules */
 		$modules = array(
 			( new RestApi( $repository ) ),
 			( new UserLogger( $repository, $wp, $loader ) ),

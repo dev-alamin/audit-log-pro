@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Amin\AuditLogPro\Database\EventRepository;
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
 
-class RestApi implements Registrable {
+class RestApi implements LoggerInterface {
 
 	private EventRepository $repository;
 

@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
@@ -17,7 +17,7 @@ use WP_User;
  *
  * @since 1.0.0
  */
-class UserLogger implements Registrable {
+class UserLogger implements LoggerInterface {
 
 	/**
 	 * Event repository.

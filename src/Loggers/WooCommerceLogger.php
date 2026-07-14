@@ -2,7 +2,7 @@
 namespace Amin\AuditLogPro\Loggers;
 
 use Amin\AuditLogPro\Core\HookLoader;
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Services\WPBridge;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This logger should only be registered when WooCommerce is active —
  * that check belongs in the loader/bootstrap, not here.
  */
-class WooCommerceLogger implements Registrable {
+class WooCommerceLogger implements LoggerInterface {
 
 	/**
 	 * Order statuses whose transitions are noise for an audit trail

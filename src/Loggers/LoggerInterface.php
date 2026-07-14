@@ -1,5 +1,5 @@
 <?php
-namespace Amin\AuditLogPro;
+namespace Amin\AuditLogPro\Loggers;
 
 /**
  * Contract for register
@@ -12,6 +12,6 @@ namespace Amin\AuditLogPro;
  * @package AuditLogPro
  * @author Al Amin <hmalaminmb4@gmail.com>
  */
-interface Registrable {
+interface LoggerInterface {
 	public function register(): void;
 }

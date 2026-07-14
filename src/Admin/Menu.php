@@ -5,10 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Amin\AuditLogPro\Registrable;
+use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Override;
 
-class Menu implements Registrable {
+class Menu implements LoggerInterface {
 	#[Override]
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
