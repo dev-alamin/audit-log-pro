@@ -24,6 +24,9 @@ use Amin\AuditLogPro\Loggers\WooCommerceLogger;
  */
 class Plugin {
 
+	/**
+	 * Constructor for Plugin class.
+	 */
 	public function __construct() {
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Schema::class, 'create_table' ) );
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilities::class, 'add_caps_on_activation' ) );

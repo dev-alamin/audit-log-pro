@@ -8,6 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Amin\AuditLogPro\Loggers\LoggerInterface;
 use Override;
 
+/**
+ * Admin menu class
+ *
+ * Handles all the admin menu page registration.
+ *
+ * @since 1.0.0
+ * @author Al amin <hmalaminmb@gmail.com>
+ */
 class Menu implements LoggerInterface {
 	#[Override]
 	public function register(): void {

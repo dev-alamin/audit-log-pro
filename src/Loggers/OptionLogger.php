@@ -11,6 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Option Logger
+ *
+ * @since 1.0.0
+ * @package AuditLogPro
+ */
 class OptionLogger implements LoggerInterface {
 
 	/**

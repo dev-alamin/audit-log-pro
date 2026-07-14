@@ -41,18 +41,38 @@ class Capabilities {
 		}
 	}
 
+	/**
+	 * View cap
+	 *
+	 * @return string
+	 */
 	public static function view(): string {
 		return self::CAPS['view'];
 	}
 
+	/**
+	 * Export cap
+	 *
+	 * @return string
+	 */
 	public static function export(): string {
 		return self::CAPS['export'];
 	}
 
+	/**
+	 * Purge cap
+	 *
+	 * @return string
+	 */
 	public static function purge(): string {
 		return self::CAPS['purge'];
 	}
 
+	/**
+	 * Remove cap
+	 *
+	 * @return void
+	 */
 	public static function remove_caps(): void {
 		$roles = array(
 			get_role( 'administrator' ),

@@ -56,12 +56,24 @@ class WooCommerceLogger implements LoggerInterface {
 	 */
 	private HookLoader $loader;
 
+	/**
+	 * Constructor for WooCommerceLogger
+	 *
+	 * @param EventRepository $repository
+	 * @param WPBridge        $wp
+	 * @param HookLoader      $loader
+	 */
 	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
 		$this->wp         = $wp;
 		$this->repository = $repository;
 		$this->loader     = $loader;
 	}
 
+	/**
+	 * Register contract implementation.
+	 *
+	 * @return void
+	 */
 	public function register(): void {
 		// Orders — CRUD-level, HPOS-safe.
 		$this->loader->add_action( 'woocommerce_new_order', array( $this, 'order_created' ), 10, 2 );

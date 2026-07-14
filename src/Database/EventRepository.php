@@ -18,7 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package AuditLogPro
  */
 class EventRepository {
-
+	/**
+	 * All possible DB key
+	 */
 	private const COLUMNS = array(
 		'event_type'  => '%s',
 		'user_id'     => '%d',

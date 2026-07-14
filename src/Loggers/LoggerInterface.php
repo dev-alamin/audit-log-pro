@@ -13,5 +13,10 @@ namespace Amin\AuditLogPro\Loggers;
  * @author Al Amin <hmalaminmb4@gmail.com>
  */
 interface LoggerInterface {
+	/**
+	 * Register contract
+	 *
+	 * @return void
+	 */
 	public function register(): void;
 }

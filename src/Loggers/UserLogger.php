@@ -40,6 +40,13 @@ class UserLogger implements LoggerInterface {
 	 */
 	private HookLoader $loader;
 
+	/**
+	 * Constructor for UserLogger.
+	 *
+	 * @param EventRepository $repository
+	 * @param WPBridge        $wp
+	 * @param HookLoader      $loader
+	 */
 	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
 		$this->wp         = $wp;
 		$this->repository = $repository;

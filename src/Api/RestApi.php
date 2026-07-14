@@ -11,8 +11,23 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
 
+/**
+ * Plugin's main REST Api handler
+ *
+ * Responsible to register new route,
+ * and their callbacks.
+ *
+ * @since 1.0.0
+ * @author Al Amin <hmalaminmb4@gmail.com>
+ * @package AuditLogPro
+ */
 class RestApi implements LoggerInterface {
 
+	/**
+	 * Database container repository
+	 *
+	 * @var EventRepository
+	 */
 	private EventRepository $repository;
 
 	/**
@@ -22,14 +37,29 @@ class RestApi implements LoggerInterface {
 	 */
 	const NAMESPACE = 'adtlogpro/v1';
 
+	/**
+	 * Constructor for DI
+	 *
+	 * @param EventRepository $repository
+	 */
 	public function __construct( EventRepository $repository ) {
 		$this->repository = $repository;
 	}
 
+	/**
+	 * Register, add required action
+	 *
+	 * @return void
+	 */
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this, 'callback' ) );
 	}
 
+	/**
+	 * API Callback
+	 *
+	 * @return void
+	 */
 	public function callback() {
 		register_rest_route(
 			self::NAMESPACE,
@@ -59,6 +89,14 @@ class RestApi implements LoggerInterface {
 		);
 	}
 
+	/**
+	 * Get logs
+	 *
+	 * Get methods for getting data
+	 *
+	 * @param WP_REST_Request $request
+	 * @return WP_REST_Response
+	 */
 	public function get_logs( WP_REST_Request $request ): WP_REST_Response {
 		$args = array_filter(
 			array(

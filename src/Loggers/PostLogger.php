@@ -12,6 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * PostLogger Class
+ *
+ * @since 1.0.0
+ * @author Al Amin <hmalaminmb4@gmail.com>
+ * @package AuditLogPro
+ */
 class PostLogger implements LoggerInterface {
 
 	/**
@@ -47,12 +54,24 @@ class PostLogger implements LoggerInterface {
 	 */
 	private HookLoader $loader;
 
+	/**
+	 * Constructor for PostLogger.
+	 *
+	 * @param EventRepository $repository
+	 * @param WPBridge        $wp
+	 * @param HookLoader      $loader
+	 */
 	public function __construct( EventRepository $repository, WPBridge $wp, HookLoader $loader ) {
 		$this->wp         = $wp;
 		$this->repository = $repository;
 		$this->loader     = $loader;
 	}
 
+	/**
+	 * Implement register contract.
+	 *
+	 * @return void
+	 */
 	public function register(): void {
 		$this->loader->add_action( 'wp_after_insert_post', array( $this, 'after_insert' ), 10, 4 );
 		$this->loader->add_action( 'transition_post_status', array( $this, 'status_changed' ), 10, 3 );

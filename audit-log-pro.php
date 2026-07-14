@@ -20,6 +20,6 @@ define( 'ADTLOGPRO_DB_VERSION', '0.1.0' );
 define( 'ADTLOGPRO_PLUGIN_FILE', __FILE__ );
 define( 'ADTLOGPRO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADTLOGPRO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'ADTLOGPRO_TABLE_NAME', 'adtlogpro_activity_log' ); // gets prefixed at runtime via $wpdb->prefix
+define( 'ADTLOGPRO_TABLE_NAME', 'adtlogpro_activity_log' );
 
 new \Amin\AuditLogPro\Plugin();
