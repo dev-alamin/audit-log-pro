@@ -57,7 +57,7 @@ class WooCommerceLogger implements LoggerInterface {
 	private HookLoader $loader;
 
 	/**
-	 * Constructor for WooCommerceLogger
+	 * Constructor for WooCommerceLogger.
 	 *
 	 * @param EventRepository $repository
 	 * @param WPBridge        $wp
@@ -136,7 +136,7 @@ class WooCommerceLogger implements LoggerInterface {
 	 */
 	public function order_status_changed( int $order_id, string $old_status, string $new_status, WC_Order $order ): void {
 		if ( $old_status === $new_status ) {
-			return;   // guard FIRST — no real transition
+			return;
 		}
 
 		if ( in_array( $old_status, self::IGNORED_STATUS_TRANSITIONS, true ) ) {
@@ -177,7 +177,7 @@ class WooCommerceLogger implements LoggerInterface {
 		$order = $this->wp->get_order( $order_id );
 
 		if ( ! $order ) {
-			return;   // guard FIRST, before anything touches $order
+			return;
 		}
 
 		$this->repository->insert(
@@ -202,7 +202,7 @@ class WooCommerceLogger implements LoggerInterface {
 		$order = $this->wp->get_order( $order_id );
 
 		if ( ! $order ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
@@ -228,7 +228,7 @@ class WooCommerceLogger implements LoggerInterface {
 		$order = $this->wp->get_order( $order_id );
 
 		if ( ! $order ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
@@ -257,7 +257,7 @@ class WooCommerceLogger implements LoggerInterface {
 		$refund = $this->wp->get_order( $refund_id );
 
 		if ( ! $refund ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
@@ -287,11 +287,17 @@ class WooCommerceLogger implements LoggerInterface {
 	 * Products
 	 * ------------------------------------------------------------------- */
 
+	/**
+	 * Fires on new product creation.
+	 *
+	 * @param integer $product_id
+	 * @return void
+	 */
 	public function product_created( int $product_id ): void {
 		$product = $this->wp->get_product( $product_id );
 
 		if ( ! $product ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
@@ -310,11 +316,17 @@ class WooCommerceLogger implements LoggerInterface {
 		);
 	}
 
+	/**
+	 * Fires on product update.
+	 *
+	 * @param integer $product_id
+	 * @return void
+	 */
 	public function product_updated( int $product_id ): void {
 		$product = $this->wp->get_product( $product_id );
 
 		if ( ! $product ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
@@ -333,11 +345,17 @@ class WooCommerceLogger implements LoggerInterface {
 		);
 	}
 
+	/**
+	 * Fires after product been in trashed.
+	 *
+	 * @param integer $product_id
+	 * @return void
+	 */
 	public function product_trashed( int $product_id ): void {
 		$product = $this->wp->get_product( $product_id );
 
 		if ( ! $product ) {
-			return;   // guard FIRST
+			return;
 		}
 
 		$this->repository->insert(
