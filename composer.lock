@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50841ee05658fd0826e915ee98d2326a",
+    "content-hash": "78d565bab439debc70f19e329bb1d576",
     "packages": [],
     "packages-dev": [
         {
@@ -342,6 +342,60 @@
             "time": "2022-02-21T01:04:05+00:00"
         },
         {
+            "name": "php-stubs/woocommerce-stubs",
+            "version": "v3.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-stubs/woocommerce-stubs.git",
+                "reference": "74583d44d4510c431dd548190bfdbd7592aab57e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/74583d44d4510c431dd548190bfdbd7592aab57e",
+                "reference": "74583d44d4510c431dd548190bfdbd7592aab57e",
+                "shasum": ""
+            },
+            "require-dev": {
+                "ext-gettext": "*",
+                "ext-hash": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "giacocorsiglia/stubs-generator": "^0.5.0",
+                "php": "~7.1",
+                "woocommerce/woocommerce": "3.8.0"
+            },
+            "suggest": {
+                "symfony/polyfill-php73": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions",
+                "szepeviktor/phpstan-wordpress": "WordPress extensions for PHPStan"
+            },
+            "type": "library",
+            "extra": {
+                "installer-paths": {
+                    "{$name}/": [
+                        "type:wordpress-plugin"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "WooCommerce function and class declaration stubs for static analysis.",
+            "homepage": "https://github.com/php-stubs/woocommerce-stubs",
+            "keywords": [
+                "PHPStan",
+                "static analysis",
+                "woocommerce",
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/php-stubs/woocommerce-stubs/issues",
+                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v3.8.0"
+            },
+            "time": "2019-11-21T22:17:45+00:00"
+        },
+        {
             "name": "php-stubs/wordpress-stubs",
             "version": "dev-master",
             "source": {
@@ -576,8 +630,8 @@
             "version": "2.2.x-dev",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f8e7061c817c7c19dc20fe1ae41b6ebf4abf8c04",
-                "reference": "f8e7061c817c7c19dc20fe1ae41b6ebf4abf8c04",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1ce1480889839f5104d2e600445613341af85b80",
+                "reference": "1ce1480889839f5104d2e600445613341af85b80",
                 "shasum": ""
             },
             "require": {
@@ -634,7 +688,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-12T17:01:28+00:00"
+            "time": "2026-07-14T21:59:30+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2438,7 +2492,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "php-stubs/wordpress-stubs": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

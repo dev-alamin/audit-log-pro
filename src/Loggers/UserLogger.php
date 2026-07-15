@@ -87,19 +87,23 @@ class UserLogger extends AbstractLogger {
 	 * @param string  $new_pass The new password.
 	 */
 	public function action_after_password_reset( $user, $new_pass ): void {
-		if ( $user instanceof WP_User ) {
-			$this->repository->insert(
-				new Event(
-					type       : 'user_password_reset',
-					actor_id   : $this->wp->get_current_user_id(),
-					object_type: 'user',
-					object_id  : $user->ID,
-					ip         : $this->wp->get_user_ip(),
-					message    : sprintf( '%s reset password', $this->wp->actor_name() ),
-					meta       : array(),
-				)
-			);
+		$user = $this->wp->get_userdata( $user->ID );
+
+		if ( ! $user ) {
+			return;
 		}
+
+		$this->repository->insert(
+			new Event(
+				type       : 'user_password_reset',
+				actor_id   : $this->wp->get_current_user_id(),
+				object_type: 'user',
+				object_id  : $user->ID,
+				ip         : $this->wp->get_user_ip(),
+				message    : sprintf( '%s reset password', $this->wp->actor_name() ),
+				meta       : array(),
+			)
+		);
 	}
 
 	public function action_user_register( int $user_id ): void {
@@ -130,19 +134,17 @@ class UserLogger extends AbstractLogger {
 			$message = sprintf( '%s updated profile of %s', $this->wp->actor_name(), $user->user_login );
 		}
 
-		if ( $user ) {
-			$this->repository->insert(
-				new Event(
-					type       : 'user_profile_updated',
-					actor_id   : $this->wp->get_current_user_id(),
-					object_type: 'user',
-					object_id  : $user->ID,
-					ip         : $this->wp->get_user_ip(),
-					message    : $message,
-					meta       : array(),
-				)
-			);
-		}
+		$this->repository->insert(
+			new Event(
+				type       : 'user_profile_updated',
+				actor_id   : $this->wp->get_current_user_id(),
+				object_type: 'user',
+				object_id  : $user->ID,
+				ip         : $this->wp->get_user_ip(),
+				message    : $message,
+				meta       : array(),
+			)
+		);
 	}
 
 	public function action_delete_user( int $user_id ): void {

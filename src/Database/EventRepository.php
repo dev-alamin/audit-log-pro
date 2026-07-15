@@ -64,9 +64,9 @@ class EventRepository {
 	 * Keeps database pollution clean by running strict type checks and WP sanitization functions.
 	 *
 	 * @param Event $event
-	 * @return array|false Cleaned data array or false on system validation failures.
+	 * @return array Cleaned data array.
 	 */
-	private function sanitize_and_validate( Event $event ): array|false {
+	private function sanitize_and_validate( Event $event ): array {
 		$ip = filter_var( $event->ip, FILTER_VALIDATE_IP );
 
 		return array(
@@ -76,7 +76,7 @@ class EventRepository {
 			'object_id'   => absint( $event->object_id ),
 			'ip_address'  => $ip ? $ip : '0.0.0.0', // Fallback placeholder safely
 			'message'     => wp_kses_post( $event->message ),
-			'meta'        => is_array( $event->meta ) ? wp_json_encode( $event->meta ) : $event->meta,
+			'meta'        => wp_json_encode( $event->meta ),
 		);
 	}
 

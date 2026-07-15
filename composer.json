@@ -15,7 +15,9 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "phpstan/phpstan": "^2.2",
         "szepeviktor/phpstan-wordpress": "^2.0",
-        "wp-phpunit/wp-phpunit": "^6.7"
+        "wp-phpunit/wp-phpunit": "^6.7",
+        "php-stubs/wordpress-stubs": "dev-master",
+        "php-stubs/woocommerce-stubs": "^3.8"
     },
     "license": "GPL-2.0-or-later",
     "autoload": {
