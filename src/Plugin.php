@@ -27,6 +27,9 @@ class Plugin {
 
 	/**
 	 * Constructor for Plugin class.
+	 *
+	 * @since 1.0.0
+	 * @package AuditLogPro
 	 */
 	public function __construct() {
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Schema::class, 'create_table' ) );
@@ -71,7 +74,6 @@ class Plugin {
 		$wp         = new WPBridge();
 		$repository = new EventRepository();
 
-		/** @var LoggerInterface[] $modules */
 		$modules = array(
 			( new UserLogger( $repository, $wp, $loader ) ),
 			( new PostLogger( $repository, $wp, $loader ) ),

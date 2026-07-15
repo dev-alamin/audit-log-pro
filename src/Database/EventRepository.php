@@ -90,9 +90,11 @@ class EventRepository {
 		global $wpdb;
 		$table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id )
 		);
+		// phpcs:enable
 	}
 
 	/**
@@ -156,6 +158,7 @@ class EventRepository {
 		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
 		$values[] = $args['per_page'];
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * 
@@ -164,5 +167,6 @@ class EventRepository {
 				...$values
 			)
 		);
+		// phpcs:enable
 	}
 }

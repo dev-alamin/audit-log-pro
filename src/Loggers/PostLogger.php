@@ -1,4 +1,11 @@
 <?php
+/**
+ * Handles logging of WordPress post events.
+ *
+ * @since 1.0.0
+ * @author Al Amin <hmalaminmb4@gmail.com>
+ * @package AuditLogPro
+ */
 namespace Amin\AuditLogPro\Loggers;
 
 use Amin\AuditLogPro\Loggers\AbstractLogger;
@@ -9,13 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * PostLogger Class
- *
- * @since 1.0.0
- * @author Al Amin <hmalaminmb4@gmail.com>
- * @package AuditLogPro
- */
 class PostLogger extends AbstractLogger {
 
 	/**

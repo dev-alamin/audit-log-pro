@@ -173,6 +173,9 @@ class OptionLogger extends AbstractLogger {
 
 	/**
 	 * Whether this option is noise we never want in the log.
+	 *
+	 * @param string $option
+	 * @return boolean
 	 */
 	private function is_ignored( string $option ): bool {
 		if ( in_array( $option, self::IGNORED_OPTIONS, true ) ) {
@@ -190,6 +193,9 @@ class OptionLogger extends AbstractLogger {
 
 	/**
 	 * Whether this option's value looks like it could hold a secret.
+	 *
+	 * @param string $option
+	 * @return boolean
 	 */
 	private function is_sensitive( string $option ): bool {
 		$option_lower = strtolower( $option );

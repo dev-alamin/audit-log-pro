@@ -10,7 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+/**
+ * Logger templates
+ *
+ * @since 1.0.0
+ * @package AuditLogPro
+ */
 abstract class AbstractLogger implements RegistrationInterface {
 	/**
 	 * Event repository.
