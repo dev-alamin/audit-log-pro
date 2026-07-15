@@ -86,7 +86,4 @@ just the manual fallback if routes 404).
 ## Not yet built (deliberately out of scope for this portfolio pass)
 
 - CSV/JSON export endpoint gated behind `alp_export_activity_log`
-- Admin list-table UI (currently REST-only + the Gutenberg block)
 - Multisite-aware table prefixing (network-wide vs per-site logs)
-- Unit tests (would follow the same PHPUnit + mocks pattern used in
-  BulkCustomerImporter's `ChunkSplitter` tests)
