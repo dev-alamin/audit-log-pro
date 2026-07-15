@@ -8,5 +8,8 @@
  * stubbed, it should fail loudly here rather than silently falling through
  * to a real WordPress environment.
  */
- 
+ if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
