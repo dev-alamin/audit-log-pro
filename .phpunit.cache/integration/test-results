@@ -1,1 +1,1 @@
-{"version":2,"defects":[],"times":{"DummyTest::test_placeholder":0,"Amin\\AuditLogPro\\Tests\\Unit\\UserLoggerTest::test_user_register_inserts_event":0.005}}
+{"version":2,"defects":[],"times":{"DummyTest::test_placeholder":0,"Amin\\AuditLogPro\\Tests\\Unit\\UserLoggerTest::test_user_register_inserts_event":0.004}}
