@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 define( 'ADTLOGPRO_PLUGIN_FILE', __DIR__ . '/../audit-log-pro.php' );

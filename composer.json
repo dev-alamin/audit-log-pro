@@ -18,7 +18,8 @@
         "wp-phpunit/wp-phpunit": "dev-master",
         "php-stubs/wordpress-stubs": "dev-master",
         "php-stubs/woocommerce-stubs": "^3.8",
-        "yoast/phpunit-polyfills": "^3.0"
+        "yoast/phpunit-polyfills": "^3.0",
+        "brain/monkey": "^2.0@dev"
     },
     "license": "GPL-2.0-or-later",
     "autoload": {
@@ -48,8 +49,8 @@
         "lint:fix": "vendor/bin/phpcbf",
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/phpunit",
-        "test:unit": "vendor/bin/phpunit -c phpunit.unit.xml.dist",
-        "test:integration": "vendor/bin/phpunit -c phpunit.xml.dist --testsuite=integration",
+        "test:unit": "vendor/bin/phpunit -c phpunit.unit.xml.dist --testsuite=Unit",
+        "test:integration": "vendor/bin/phpunit -c phpunit.xml.dist --testsuite=Integration",
         "qa": [
             "@lint",
             "@analyse",
