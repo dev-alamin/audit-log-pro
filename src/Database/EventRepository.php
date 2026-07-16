@@ -136,7 +136,7 @@ class EventRepository {
 		}
 
 		if ( ! empty( $args['cursor'] ) ) {
-			$where[]  = 'cursor < %d';
+			$where[]  = 'id < %d';
 			$values[] = $args['cursor'];
 		}
 

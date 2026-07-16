@@ -10,6 +10,7 @@ define( 'DB_HOST', 'localhost' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
+// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 $table_prefix = 'wptests_';
 
 define( 'WP_TESTS_DOMAIN', 'example.org' );
