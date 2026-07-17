@@ -19,7 +19,10 @@
         "php-stubs/wordpress-stubs": "dev-master",
         "php-stubs/woocommerce-stubs": "^3.8",
         "yoast/phpunit-polyfills": "^3.0",
-        "brain/monkey": "^2.0@dev"
+        "brain/monkey": "^2.0@dev",
+        "php-stubs/wp-cli-stubs": "dev-master",
+        "composer/composer": "^2.10@dev",
+        "wp-cli/php-cli-tools": "^0.13.0"
     },
     "license": "GPL-2.0-or-later",
     "autoload": {

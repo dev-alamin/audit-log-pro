@@ -12,8 +12,8 @@ use Amin\AuditLogPro\Core\Capabilities;
 use Amin\AuditLogPro\Loggers\OptionLogger;
 use Amin\AuditLogPro\Loggers\PostLogger;
 use Amin\AuditLogPro\Loggers\WooCommerceLogger;
-use Amin\AuditLogPro\Registrable;
-
+use Amin\AuditLogPro\CLI\AppCLI;
+use WP_CLI;
 /**
  * Bootstraps the Audit Log Pro plugin.
  *
@@ -35,6 +35,11 @@ class Plugin {
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Schema::class, 'create_table' ) );
 		register_activation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilities::class, 'add_caps_on_activation' ) );
 		register_deactivation_hook( ADTLOGPRO_PLUGIN_FILE, array( Capabilities::class, 'remove_caps' ) );
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			WP_CLI::add_command( 'adtlog', AppCLI::class );
+		}
+
 		add_action( 'plugins_loaded', array( $this, 'boot' ) );
 	}
 
