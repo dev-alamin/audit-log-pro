@@ -1,17 +1,33 @@
 import { createRoot, useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
+apiFetch.use( apiFetch.createNonceMiddleware( adtLogPro.nonce ) );
+apiFetch.use( apiFetch.createRootURLMiddleware( adtLogPro.root ) );
+
 const LogsTable = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         apiFetch({ path: '/adtlogpro/v1/logs?per_page=10' })
             .then((result) => {
-                setLogs(result);
-                setLoading(false);
+                if (isMounted) {
+                    setLogs(result);
+                    setLoading(false);
+                }
             })
-            .catch(() => setLoading(false));
+            .catch((error) => {
+                if (isMounted) {
+                    console.error('Failed to fetch audit logs:', error);
+                    setLoading(false);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const badgeStyles = {

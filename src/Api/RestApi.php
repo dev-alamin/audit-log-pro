@@ -69,7 +69,7 @@ class RestApi implements RegistrationInterface {
 				'callback'            => array( $this, 'get_logs' ),
 				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
-				}, // MUST handle soon.
+				},
 				'args'                => array(
 					'per_page' => array(
 						'description'       => __( 'Number of logs per page', 'audit-log-pro' ),

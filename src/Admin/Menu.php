@@ -58,6 +58,15 @@ class Menu implements RegistrationInterface {
 			true
 		);
 
+		wp_localize_script(
+			'adtlogpro-admin',
+			'adtLogPro',
+			array(
+				'root'  => esc_url_raw( rest_url() ),
+				'nonce' => wp_create_nonce( 'wp_rest' ),
+			)
+		);
+
 		echo '<div class="wrap"><div id="adtlogpro-admin-root"></div></div>';
 	}
 }
