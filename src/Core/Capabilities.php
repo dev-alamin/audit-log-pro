@@ -51,6 +51,15 @@ class Capabilities {
 	}
 
 	/**
+	 * View cap.
+	 *
+	 * @return boolean
+	 */
+	public static function can_view(): bool {
+		return current_user_can( self::view() );
+	}
+
+	/**
 	 * Export cap
 	 *
 	 * @return string

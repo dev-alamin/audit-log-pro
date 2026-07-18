@@ -1,3 +1,6 @@
+/*!*****************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./assets/js/src/style.css ***!
+  \*****************************************************************************************************************************************************************************/
 #adtlogpro-admin-root .inline-flex {
     display: inline-flex
 }
@@ -97,6 +100,9 @@
 }
 #adtlogpro-admin-root .text-left {
     text-align: left
+}
+#adtlogpro-admin-root .text-center {
+    text-align: center
 }
 #adtlogpro-admin-root .font-mono {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
@@ -201,3 +207,5 @@
 #adtlogpro-admin-root .hover\:bg-slate-50\/70:hover {
     background-color: rgb(248 250 252 / 0.7)
 }
+
+/*# sourceMappingURL=style-admin.css.map*/

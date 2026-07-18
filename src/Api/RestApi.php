@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\RegistrationInterface;
+use Amin\AuditLogPro\Core\Capabilities;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
@@ -68,7 +69,7 @@ class RestApi implements RegistrationInterface {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logs' ),
 				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
+					return array( Capabilities::class, 'can_view' );
 				},
 				'args'                => array(
 					'per_page' => array(

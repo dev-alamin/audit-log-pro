@@ -47,6 +47,7 @@ const LogsTable = () => {
     return (
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
+                <h1 className='text-center font-medium'>Audit Log Pro</h1>
                 <table className="w-full text-sm text-left">
                     <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200">
                         <tr>
