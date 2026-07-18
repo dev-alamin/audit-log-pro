@@ -35,6 +35,6 @@ final class Event {
 		public readonly int $object_id,
 		public readonly string $ip,
 		public readonly string $message,
-		public readonly array $meta = array(),
+		public readonly array $meta = array()
 	) {}
 }

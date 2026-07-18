@@ -2,6 +2,7 @@
 namespace Tests\Integration\Database;
 
 use Amin\AuditLogPro\Database\Event;
+use Amin\AuditLogPro\Database\EventQuery;
 use Amin\AuditLogPro\Database\EventRepository;
 use WP_UnitTestCase;
 /**
@@ -16,9 +17,6 @@ class EventRepositoryTest extends WP_UnitTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-
-		global $wpdb;
-		$this->table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
 
 		global $wpdb;
 		$this->table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
@@ -121,17 +119,17 @@ class EventRepositoryTest extends WP_UnitTestCase {
 		$this->repository->insert( $this->make_event( array( 'type' => 'post_updated' ) ) );
 		$this->repository->insert( $this->make_event( array( 'type' => 'user_deleted' ) ) );
 
-		$results = $this->repository->query( array( 'event_type' => 'user_deleted' ) );
+		$results = $this->repository->query( new EventQuery( event_type: 'user_deleted' ) );
 
 		$this->assertCount( 1, $results );
 		$this->assertSame( 'user_deleted', $results[0]->event_type );
 	}
 
-	public function test_query_filters_by_user_id(): void {
+	public function test_query_filters_by_actor_id(): void {
 		$this->repository->insert( $this->make_event( array( 'actor_id' => 5 ) ) );
 		$this->repository->insert( $this->make_event( array( 'actor_id' => 9 ) ) );
 
-		$results = $this->repository->query( array( 'user_id' => 5 ) );
+		$results = $this->repository->query( new EventQuery( actor_id: 5 ) );
 
 		$this->assertCount( 1, $results );
 		$this->assertSame( 5, (int) $results[0]->user_id );
@@ -142,7 +140,7 @@ class EventRepositoryTest extends WP_UnitTestCase {
 			$this->repository->insert( $this->make_event() );
 		}
 
-		$results = $this->repository->query( array( 'per_page' => 3 ) );
+		$results = $this->repository->query( new EventQuery( per_page: 3 ) );
 
 		$this->assertCount( 3, $results );
 	}
@@ -150,22 +148,46 @@ class EventRepositoryTest extends WP_UnitTestCase {
 	public function test_query_returns_empty_array_when_no_matches(): void {
 		$this->repository->insert( $this->make_event( array( 'type' => 'post_updated' ) ) );
 
-		$results = $this->repository->query( array( 'event_type' => 'nonexistent_type' ) );
+		$results = $this->repository->query( new EventQuery( event_type: 'nonexistent_type' ) );
 
 		$this->assertSame( array(), $results );
 	}
 
-	/**
-	 * This test targets the `cursor` filter directly. If your `events` table
-	 * has no literal `cursor` column, this will throw a DB error — that's
-	 * the bug flagged earlier surfacing itself. If it does exist, this
-	 * verifies the filter actually narrows results.
-	 */
-	public function test_query_cursor_filter_does_not_throw(): void {
+	public function test_query_cursor_id_excludes_rows_at_or_after_cursor(): void {
+		global $wpdb;
+
+		$this->repository->insert( $this->make_event() );
+		$first_id = (int) $wpdb->insert_id;
+
+		$this->repository->insert( $this->make_event() );
+		$second_id = (int) $wpdb->insert_id;
+
+		// cursor_id = second_id should only return rows with id < second_id.
+		$results = $this->repository->query( new EventQuery( cursor_id: $second_id ) );
+
+		$this->assertCount( 1, $results );
+		$this->assertSame( $first_id, (int) $results[0]->id );
+	}
+
+	public function test_query_filters_by_created_after(): void {
+		global $wpdb;
+
 		$this->repository->insert( $this->make_event() );
 
-		$results = $this->repository->query( array( 'cursor' => 999999 ) );
+		$results = $this->repository->query(
+			new EventQuery( created_after: gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ) )
+		);
 
-		$this->assertIsArray( $results );
+		$this->assertCount( 1, $results );
+	}
+
+	public function test_query_filters_by_created_before_excludes_future_window(): void {
+		$this->repository->insert( $this->make_event() );
+
+		$results = $this->repository->query(
+			new EventQuery( created_before: gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ) )
+		);
+
+		$this->assertSame( array(), $results );
 	}
 }

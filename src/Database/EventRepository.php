@@ -103,70 +103,56 @@ class EventRepository {
 	 * Plugin's main method to query event
 	 * by various params
 	 *
-	 * @param array $args
+	 * @param EventQuery $filters
 	 * @return array
 	 */
-	public function query( array $args = array() ): array {
+	public function query( EventQuery $filters ): array {
 		global $wpdb;
 		$table = $wpdb->prefix . ADTLOGPRO_TABLE_NAME;
-
-		$default = array(
-			'event_type'  => '',
-			'user_id'     => 0,
-			'object_type' => '',
-			'object_id'   => 0,
-			'after'       => '',
-			'cursor'      => '',
-			'per_page'    => 20,
-		);
-
-		$args = wp_parse_args( $args, $default );
 
 		$where  = array( '1=1' );
 		$values = array();
 
-		if ( ! empty( $args['event_type'] ) ) {
+		if ( '' !== $filters->event_type ) {
 			$where[]  = 'event_type = %s';
-			$values[] = $args['event_type'];
+			$values[] = $filters->event_type;
 		}
 
-		if ( ! empty( $args['user_id'] ) ) {
+		if ( 0 !== $filters->actor_id ) {
 			$where[]  = 'user_id = %d';
-			$values[] = $args['user_id'];
+			$values[] = $filters->actor_id;
 		}
 
-		if ( ! empty( $args['cursor'] ) ) {
-			$where[]  = 'id < %d';
-			$values[] = $args['cursor'];
-		}
-
-		if ( ! empty( $args['object_type'] ) ) {
+		if ( '' !== $filters->object_type ) {
 			$where[]  = 'object_type = %s';
-			$values[] = $args['object_type'];
+			$values[] = $filters->object_type;
 		}
 
-		if ( ! empty( $args['object_id'] ) ) {
+		if ( 0 !== $filters->object_id ) {
 			$where[]  = 'object_id = %d';
-			$values[] = $args['object_id'];
+			$values[] = $filters->object_id;
 		}
 
-		if ( ! empty( $args['created_at'] ) ) {
-			$where[]  = 'created_at = %s';
-			$values[] = $args['created_at'];
+		if ( null !== $filters->created_after ) {
+			$where[]  = 'created_at >= %s';
+			$values[] = $filters->created_after;
 		}
 
-		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
-		$values[] = $args['per_page'];
+		if ( null !== $filters->created_before ) {
+			$where[]  = 'created_at <= %s';
+			$values[] = $filters->created_before;
+		}
+
+		if ( null !== $filters->cursor_id ) {
+			$where[]  = 'id < %d';
+			$values[] = $filters->cursor_id;
+		}
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
-		return (array) $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * 
-				FROM {$table} 
-				WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d',
-				...$values
-			)
-		);
+		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
+		$values[] = $filters->per_page;
+
+		return (array) $wpdb->get_results( $wpdb->prepare( $sql, ...$values ) );
 		// phpcs:enable
 	}
 }
