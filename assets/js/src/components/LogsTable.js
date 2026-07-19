@@ -1,9 +1,6 @@
 import { createRoot, useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-apiFetch.use( apiFetch.createNonceMiddleware( adtLogPro.nonce ) );
-apiFetch.use( apiFetch.createRootURLMiddleware( adtLogPro.root ) );
-
 const LogsTable = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
