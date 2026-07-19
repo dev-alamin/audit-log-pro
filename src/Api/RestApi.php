@@ -75,7 +75,7 @@ class RestApi implements RegistrationInterface {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logs' ),
 				'permission_callback' => function () {
-					return array( Capabilities::class, 'can_view' );
+					return Capabilities::can_view();
 				},
 				'args'                => array(
 					'per_page'       => array(
@@ -149,10 +149,10 @@ class RestApi implements RegistrationInterface {
 			self::NAMESPACE,
 			'/logs/(?P<id>\d+)',
 			array(
-				'method'              => WP_REST_Server::READABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_single_item' ),
 				'permission_callback' => function () {
-					return array( Capabilities::class, 'can_view' );
+					return Capabilities::can_view();
 				},
 				'args'                => array(
 					'id' => array(
@@ -224,7 +224,7 @@ class RestApi implements RegistrationInterface {
 	public function get_single_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 
 		try {
-			$res = $this->repository->find( $request['id'] );
+			$res = $this->repository->find( (int) $request['id'] );
 		} catch ( \Throwable $e ) {
 			return new WP_Error(
 				'adtlogpro_query_failed',
