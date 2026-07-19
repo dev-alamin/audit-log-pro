@@ -92,6 +92,3 @@ jobs:
           WP_CORE_DIR: /tmp/wordpress
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
         run: vendor/bin/phpunit
-
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit
