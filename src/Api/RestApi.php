@@ -9,6 +9,7 @@ use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\RegistrationInterface;
 use Amin\AuditLogPro\Core\Capabilities;
 use Amin\AuditLogPro\Database\EventQuery;
+use Amin\AuditLogPro\Utility\Helper;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
@@ -159,6 +160,14 @@ class RestApi implements RegistrationInterface {
 			per_page      : $request['per_page'],
 		);
 
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$cache_key = Helper::get_app_prefix() . 'rest_get_logs' . md5( serialize( $filters ) );
+		$cached    = get_transient( $cache_key );
+
+		if ( $cached ) {
+			return rest_ensure_response( $cached );
+		}
+
 		$logs = $this->repository->query( $filters );
 
 		$arr = function ( $log ) {
@@ -175,7 +184,8 @@ class RestApi implements RegistrationInterface {
 				);
 		};
 
-		$data = array_map( $arr, $logs );
+		$data   = array_map( $arr, $logs );
+		$cached = set_transient( $cache_key, $data, MINUTE_IN_SECONDS * 2 );
 
 		return rest_ensure_response( $data );
 	}
