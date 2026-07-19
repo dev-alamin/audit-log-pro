@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Amin\AuditLogPro\Database\EventRepository;
 use Amin\AuditLogPro\RegistrationInterface;
 use Amin\AuditLogPro\Core\Capabilities;
-use Amin\AuditLogPro\Database\Event;
 use Amin\AuditLogPro\Database\EventQuery;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -83,14 +82,41 @@ class RestApi implements RegistrationInterface {
 							return $value > 0 && $value < 100;
 						},
 					),
-					'page'           => array(
-						'description'       => __( 'Page number', 'audit-log-pro' ),
+					'cursor_id'      => array(
+						'description'       => __( 'Return rows with id less than this cursor', 'audit-log-pro' ),
 						'type'              => 'integer',
-						'default'           => 1,
+						'default'           => null,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => function ( $value ) {
+							return null === $value || ( is_numeric( $value ) && $value > 0 );
+						},
+					),
+					'event_type'     => array(
+						'description'       => __( 'Filter by event type', 'audit-log-pro' ),
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'object_type'    => array(
+						'description'       => __( 'Filter by object type', 'audit-log-pro' ),
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'user_id'        => array(
+						'description'       => __( 'Filter by acting user id', 'audit-log-pro' ),
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'object_id'      => array(
+						'description'       => __( 'Filter by object id', 'audit-log-pro' ),
+						'type'              => 'integer',
+						'default'           => 0,
 						'sanitize_callback' => 'absint',
 					),
 					'created_after'  => array(
-						'description'       => __( 'Only events after this date (Y-m-d H:i:s)', 'audit-log-pro' ),
+						'description'       => __( 'Only events after this datetime (Y-m-d H:i:s)', 'audit-log-pro' ),
 						'type'              => 'string',
 						'default'           => null,
 						'sanitize_callback' => 'sanitize_text_field',
@@ -99,7 +125,7 @@ class RestApi implements RegistrationInterface {
 						},
 					),
 					'created_before' => array(
-						'description'       => __( 'Only events before this date (Y-m-d H:i:s)', 'audit-log-pro' ),
+						'description'       => __( 'Only events before this datetime (Y-m-d H:i:s)', 'audit-log-pro' ),
 						'type'              => 'string',
 						'default'           => null,
 						'sanitize_callback' => 'sanitize_text_field',
@@ -122,28 +148,18 @@ class RestApi implements RegistrationInterface {
 	 */
 	public function get_logs( WP_REST_Request $request ): WP_REST_Response {
 
-		$event_type     = $request['event_type'] ? sanitize_key( $request['event_type'] ) : '';
-		$object_type    = $request['object_type'] ? sanitize_key( $request['object_type'] ) : '';
-		$actor_id       = $request['user_id'] ? absint( $request['user_id'] ) : 0;
-		$object_id      = $request['object_id'] ? absint( $request['object_id'] ) : 0;
-		$user_ip        = $request['user_ip'] ? filter_var( $request['user_ip'], FILTER_VALIDATE_IP ) : '0.0.0.0';
-		$created_after  = $request['created_after'] ? $request['created_after'] : null;
-		$created_before = $request['created_before'] ? $request['created_before'] : null;
-		$cursor_id      = null;
-		$per_page       = $request['per_page'] ? absint( $request['per_page'] ) : 10;
-
-		$args = new EventQuery(
-			event_type    : $event_type,
-			actor_id      : $actor_id,
-			object_type   : $object_type,
-			object_id     : $object_id,
-			created_after : $created_after,
-			created_before: $created_before,
-			cursor_id     : $cursor_id,
-			per_page      : $per_page
+		$filters = new EventQuery(
+			event_type    : $request['event_type'],
+			actor_id      : $request['user_id'],
+			object_type   : $request['object_type'],
+			object_id     : $request['object_id'],
+			created_after : $request['created_after'],
+			created_before: $request['created_before'],
+			cursor_id     : $request['cursor_id'],
+			per_page      : $request['per_page'],
 		);
 
-		$logs = $this->repository->query( $args );
+		$logs = $this->repository->query( $filters );
 
 		$arr = function ( $log ) {
 				return array(
