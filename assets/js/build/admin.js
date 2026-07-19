@@ -32,7 +32,7 @@ const LogsTable = () => {
       path: '/adtlogpro/v1/logs?per_page=10'
     }).then(result => {
       if (isMounted) {
-        setLogs(result);
+        setLogs(result.data);
         setLoading(false);
       }
     }).catch(error => {

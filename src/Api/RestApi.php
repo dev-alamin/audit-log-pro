@@ -10,6 +10,7 @@ use Amin\AuditLogPro\RegistrationInterface;
 use Amin\AuditLogPro\Core\Capabilities;
 use Amin\AuditLogPro\Database\EventQuery;
 use Amin\AuditLogPro\Utility\Helper;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
@@ -147,7 +148,7 @@ class RestApi implements RegistrationInterface {
 	 * @param WP_REST_Request $request
 	 * @return WP_REST_Response
 	 */
-	public function get_logs( WP_REST_Request $request ): WP_REST_Response {
+	public function get_logs( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 
 		$filters = new EventQuery(
 			event_type    : $request['event_type'],
@@ -164,11 +165,19 @@ class RestApi implements RegistrationInterface {
 		$cache_key = Helper::get_app_prefix() . 'rest_get_logs' . md5( serialize( $filters ) );
 		$cached    = get_transient( $cache_key );
 
-		if ( $cached ) {
+		if ( false !== $cached ) {
 			return rest_ensure_response( $cached );
 		}
 
-		$logs = $this->repository->query( $filters );
+		try {
+			$logs = $this->repository->query( $filters );
+		} catch ( \Throwable $e ) {
+			return new WP_Error(
+				'adtlogpro_query_failed',
+				__( 'Unable to retrie logs', 'audit-log-pro' ),
+				array( 'status' => 500 )
+			);
+		}
 
 		$arr = function ( $log ) {
 				return array(
@@ -184,7 +193,14 @@ class RestApi implements RegistrationInterface {
 				);
 		};
 
-		$data   = array_map( $arr, $logs );
+		$maped_data  = array_map( $arr, $logs );
+		$next_cursor = ! empty( $logs ) ? end( $logs )->id : null;
+
+		$data   = array(
+			'data'        => $maped_data,
+			'next_cursor' => $next_cursor,
+			'has_more'    => count( $logs ) === $filters->per_page,
+		);
 		$cached = set_transient( $cache_key, $data, MINUTE_IN_SECONDS * 2 );
 
 		return rest_ensure_response( $data );
