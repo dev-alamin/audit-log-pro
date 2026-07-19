@@ -129,8 +129,8 @@ class RestApi implements RegistrationInterface {
 		$user_ip        = $request['user_ip'] ? filter_var( $request['user_ip'], FILTER_VALIDATE_IP ) : '0.0.0.0';
 		$created_after  = $request['created_after'] ? $request['created_after'] : null;
 		$created_before = $request['created_before'] ? $request['created_before'] : null;
-		$cursor_id      = 10;
-		$per_page       = 20;
+		$cursor_id      = null;
+		$per_page       = $request['per_page'] ? absint( $request['per_page'] ) : 10;
 
 		$args = new EventQuery(
 			event_type    : $event_type,

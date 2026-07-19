@@ -149,8 +149,8 @@ class EventRepository {
 		}
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
-		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
 		$values[] = $filters->per_page;
+		$sql      = "SELECT * FROM {$table} WHERE " . implode( ' AND ', $where ) . ' ORDER BY id DESC LIMIT %d';
 
 		return (array) $wpdb->get_results( $wpdb->prepare( $sql, ...$values ) );
 		// phpcs:enable
