@@ -65,6 +65,9 @@ class RestApi implements RegistrationInterface {
 	 * @return void
 	 */
 	public function adtlogpro_rest_cb() {
+		/**
+		 * Get collections of log, events.
+		 */
 		register_rest_route(
 			self::NAMESPACE,
 			'/logs/',
@@ -138,6 +141,28 @@ class RestApi implements RegistrationInterface {
 				),
 			)
 		);
+
+		/**
+		 * Get a single item - Event, Log
+		 */
+		register_rest_route(
+			self::NAMESPACE,
+			'/logs/(?P<id>\d+)',
+			array(
+				'method'              => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_single_item' ),
+				'permission_callback' => function () {
+					return array( Capabilities::class, 'can_view' );
+				},
+				'args'                => array(
+					'id' => array(
+						'description'       => __( 'Item ID', 'audit-log-pro' ),
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+				),
+			),
+		);
 	}
 
 	/**
@@ -179,30 +204,65 @@ class RestApi implements RegistrationInterface {
 			);
 		}
 
-		$arr = function ( $log ) {
-				return array(
-					'id'          => (int) $log->id,
-					'event_type'  => $log->event_type,
-					'user_id'     => (int) $log->user_id,
-					'object_type' => $log->object_type,
-					'object_id'   => (int) $log->object_id,
-					'ip_address'  => $log->ip_address,
-					'message'     => $log->message,
-					'meta'        => json_decode( $log->meta, true ) ?? array(),
-					'created_at'  => $log->created_at,
-				);
-		};
-
-		$maped_data  = array_map( $arr, $logs );
 		$next_cursor = ! empty( $logs ) ? end( $logs )->id : null;
-
-		$data   = array(
-			'data'        => $maped_data,
+		$data        = array(
+			'data'        => self::format_logs( $logs ),
 			'next_cursor' => $next_cursor,
 			'has_more'    => count( $logs ) === $filters->per_page,
 		);
-		$cached = set_transient( $cache_key, $data, MINUTE_IN_SECONDS * 2 );
+		$cached      = set_transient( $cache_key, $data, MINUTE_IN_SECONDS * 2 );
 
 		return rest_ensure_response( $data );
+	}
+
+	/**
+	 * Get a single item - Event, Log
+	 *
+	 * @param WP_REST_Request $request
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function get_single_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+
+		try {
+			$res = $this->repository->find( $request['id'] );
+		} catch ( \Throwable $e ) {
+			return new WP_Error(
+				'adtlogpro_query_failed',
+				__( 'Unable to retrie logs', 'audit-log-pro' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return rest_ensure_response( self::format_log( $res ) );
+	}
+
+	/**
+	 * Format raw data for api response.
+	 *
+	 * @param object $log
+	 * @return array
+	 */
+	private static function format_log( object $log ): array {
+		return array(
+			'id'          => (int) $log->id,
+			'event_type'  => $log->event_type,
+			'user_id'     => (int) $log->user_id,
+			'object_type' => $log->object_type,
+			'object_id'   => (int) $log->object_id,
+			'ip_address'  => $log->ip_address,
+			'message'     => $log->message,
+			'meta'        => json_decode( $log->meta, true ) ?? array(),
+			'created_at'  => $log->created_at,
+		);
+	}
+
+	/**
+	 * Format raw data for api response.
+	 *
+	 * @param array $logs
+	 * @return array
+	 */
+	private static function format_logs( array $logs ): array {
+		return array_map( array( self::class, 'format_log' ), $logs );
 	}
 }
