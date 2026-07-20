@@ -1,31 +1,34 @@
 {
-  "name": "audit-log-pro",
-  "version": "1.0.0",
-  "description": "Enterprise activity/audit logging plugin. Built as a technical portfolio piece covering: custom table design, optimized $wpdb queries at scale, object caching, cursor pagination, REST API, WP-Cron retention, Gutenberg dynamic blocks, editor SlotFill with a custom wp.data store, and RBAC.",
-  "main": "webpack.config.js",
-  "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build",
-    "test": "wp-scripts test-unit-js"
-  },
-  "dependencies": {
-    "@wordpress/api-fetch": "^7.50.0",
-    "@wordpress/components": "^36.1.0",
-    "@wordpress/element": "^8.2.0"
-  },
-  "devDependencies": {
-    "@wordpress/scripts": "^32.6.0",
-    "autoprefixer": "^10.5.2",
-    "postcss": "^8.5.17",
-    "tailwindcss": "^3.4.19"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dev-alamin/audit-log-pro.git"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dev-alamin/audit-log-pro/issues"
-  },
-  "homepage": "https://github.com/dev-alamin/audit-log-pro#readme"
+	"name": "audit-log-pro",
+	"version": "1.0.0",
+	"description": "Enterprise activity/audit logging plugin. Built as a technical portfolio piece covering: custom table design, optimized $wpdb queries at scale, object caching, cursor pagination, REST API, WP-Cron retention, Gutenberg dynamic blocks, editor SlotFill with a custom wp.data store, and RBAC.",
+	"main": "webpack.config.js",
+	"scripts": {
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"test": "wp-scripts test-unit-js",
+		"lint:js": "wp-scripts lint-js"
+	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^7.50.0",
+		"@wordpress/components": "^36.1.0",
+		"@wordpress/element": "^8.2.0"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^32.6.0",
+		"autoprefixer": "^10.5.2",
+		"postcss": "^8.5.17",
+		"tailwindcss": "^3.4.19"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dev-alamin/audit-log-pro.git"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/dev-alamin/audit-log-pro/issues"
+	},
+	"homepage": "https://github.com/dev-alamin/audit-log-pro#readme"
 }

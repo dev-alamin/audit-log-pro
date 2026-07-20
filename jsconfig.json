@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@components/*": [ "assets/js/src/components/*" ],
+			"@hooks/*": [ "assets/js/src/hooks/*" ]
+		}
+	}
+}
