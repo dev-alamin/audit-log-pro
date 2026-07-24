@@ -13,6 +13,7 @@ use Amin\AuditLogPro\Loggers\OptionLogger;
 use Amin\AuditLogPro\Loggers\PostLogger;
 use Amin\AuditLogPro\Loggers\WooCommerceLogger;
 use Amin\AuditLogPro\CLI\AppCLI;
+use Amin\AuditLogPro\Core\ReWrite;
 use WP_CLI;
 /**
  * Bootstraps the Audit Log Pro plugin.
@@ -74,6 +75,8 @@ class Plugin {
 			$this->maybe_upgrade_database();
 			( new Menu() )->register_hook();
 		}
+
+		new ReWrite();
 
 		$loader     = new HookLoader();
 		$wp         = new WPBridge();
